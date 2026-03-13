@@ -237,10 +237,11 @@ html, body {
 .choices {
   flex:1;
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  grid-template-rows:1fr 1fr;
+  grid-template-columns:1fr 1fr;
   gap:1vh 1.2vw;
-  overflow:hidden;
+  overflow-y:auto;
+  overflow-x:hidden;
+  align-content:start;
 }
 
 .choice-btn {
@@ -501,7 +502,7 @@ html, body {
   position:fixed; inset:0; z-index:9000;
   background:rgba(42,31,26,.5);
   flex-direction:column;
-  align-items:center; justify-content:center;
+  align-items:flex-start; justify-content:flex-start;
   padding:4vw;
   overflow:auto;
 }
@@ -512,7 +513,7 @@ html, body {
   width:100%;
   max-width:min(96vw, 900px);
   background:#fff;
-  border-radius:3vw; overflow:hidden;
+  border-radius:3vw; overflow:visible;
   box-shadow:0 8px 40px rgba(42,31,26,.3);
 }
 /* スクショシートヘッダー */
@@ -1001,20 +1002,21 @@ function saveImage(){
     // ③ 描画完了を待ってからカード全体をキャプチャ
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const cardH = card.scrollHeight;
+        const rect = card.getBoundingClientRect();
+        const cardH = Math.max(card.scrollHeight, card.offsetHeight, rect.height);
         html2canvas(card, {
           scale: 2,
           useCORS: true,
           backgroundColor: '#ffffff',
           logging: false,
-          scrollX: 0,
-          scrollY: 0,
-          x: 0,
-          y: 0,
-          width: card.offsetWidth,
+          scrollX: -rect.left,
+          scrollY: -rect.top,
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
           height: cardH,
-          windowWidth: card.offsetWidth,
-          windowHeight: cardH,
+          windowWidth: window.innerWidth,
+          windowHeight: window.innerHeight,
         }).then(canvas => {
           // キャプチャ完了後にオーバーレイを閉じる
           ov.classList.remove('open');
