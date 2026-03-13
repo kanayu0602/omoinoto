@@ -2,1001 +2,1124 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>えいようチェッカー｜症状から栄養素不足をチェック</title>
-<meta property="og:title" content="えいようチェッカー｜症状から栄養素不足をチェック">
-<meta property="og:description" content="疲れ・冷え・肌荒れなど気になる症状から、不足しがちな栄養素を薬剤師監修でチェック。のみあわせチェッカー姉妹アプリ。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://kanayu0602.github.io/omoinoto/">
-<meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="https://kanayu0602.github.io/omoinoto/og-image.png">
-<meta name="twitter:image" content="https://kanayu0602.github.io/omoinoto/og-image.png">
-<meta name="description" content="症状から不足しがちな栄養素をチェック。薬剤師・くすりのたま監修。のみあわせチェッカー姉妹アプリ。">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>思いの綴 ― もしものとき、わたしのこと。</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Zen+Kaku+Gothic+New:wght@400;700&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --yellow: #FFD94A;
-    --yellow-light: #FFFBEA;
-    --yellow-dark: #F0B800;
-    --yellow-deep: #C89600;
-    --cream: #FAFAF7;
-    --navy: #1a2e3b;
-    --navy-soft: #2d4a5a;
-    --gray: #8a9ba8;
-    --gray-light: #f0f4f6;
-    --border: #F0E8C8;
-    --safe: #27ae60;
-    --safe-light: #eafaf1;
-    --warn: #E07A3A;
-    --warn-light: #fff3eb;
+/* ══════════════════════════════════════
+   横向き固定レイアウト
+   - 縦持ちの場合は「横にしてください」案内
+   - 全要素を100vhに収める（スクロールなし）
+══════════════════════════════════════ */
+:root {
+  --bg:      #fdf6f0;
+  --bg2:     #f9ede4;
+  --pink:    #f0e0d8;
+  --accent:  #c47a5a;
+  --accent2: #9b7c6e;
+  --deep:    #2a1f1a;
+  --mid:     #5c4038;
+  --dim:     rgba(42,31,26,0.5);
+  --faint:   rgba(42,31,26,0.25);
+  --card:    #ffffff;
+  --card-hover: #fff8f5;
+  --card-sel:   #fdeee7;
+  --border:  rgba(196,122,90,0.22);
+  --border-sel: #c47a5a;
+  --shadow:  0 2px 16px rgba(196,122,90,0.12);
+  --shadow-sel: 0 0 0 3px rgba(196,122,90,0.3), 0 4px 20px rgba(196,122,90,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  width:100%; height:100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--deep);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* ── 縦持ち警告 ── */
+/* ── 起動時オーバーレイ（数秒表示） ── */
+#launch-msg {
+  display:flex;
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:1.5rem; text-align:center; padding:2rem;
+  transition: opacity .6s ease;
+}
+#launch-msg.hidden { opacity:0; pointer-events:none; }
+.launch-icon { font-size:3.5rem; animation: launchRotate 1.5s ease-in-out forwards; }
+@keyframes launchRotate {
+  0%  { transform:rotate(0deg); }
+  100%{ transform:rotate(90deg); }
+}
+#launch-msg p { font-size:1.3rem; color:var(--mid); line-height:1.9; font-family:'Noto Serif JP',serif; font-weight:400; }
+#launch-msg .skip-btn {
+  margin-top:.5rem;
+  background:none; border:none;
+  color:var(--faint); font-size:.9rem;
+  text-decoration:underline; cursor:pointer;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+}
+
+/* ── 縦持ちでも強制横表示 ── */
+/* スマホ・タブレット縦持ちのみ回転（PCは除外） */
+@media (orientation:portrait) and (max-width:1024px) {
+  #app {
+    width: 100vh !important;
+    height: 100vw !important;
+    transform-origin: top left;
+    transform: rotate(90deg) translateY(-100%);
+    overflow:hidden;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif; background: var(--cream); color: var(--navy); min-height: 100vh; }
+}
 
-  header { background: #fff; border-bottom: 3px solid var(--yellow); padding: 0 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(255,217,74,0.15); }
-  .badge { background: rgba(255,217,74,0.15); color: var(--yellow-deep); border: 1.5px solid var(--yellow); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .badge-sister { background: rgba(255,217,74,0.08); color: var(--navy-soft); border-color: var(--yellow-dark); }
+/* ── メインアプリ（横向き専用） ── */
+#app {
+  width:100vw; height:100vh;
+  display:flex; flex-direction:column;
+  overflow: hidden;
+}
 
-  .hero { background: linear-gradient(135deg, #FFFDE7 0%, #fff 50%, #FFFBEA 100%); padding: 48px 24px 56px; text-align: center; position: relative; overflow: hidden; }
-  .hero::before { content:''; position:absolute; width:300px; height:300px; background:var(--yellow); opacity:.06; border-radius:50%; top:-100px; right:-80px; }
-  .hero::after  { content:''; position:absolute; width:200px; height:200px; background:var(--yellow); opacity:.04; border-radius:50%; bottom:-60px; left:-40px; }
-  .hero-tag { display:inline-block; background:rgba(255,217,74,0.2); color:var(--yellow-deep); font-size:11px; padding:4px 14px; border-radius:20px; border:1.5px solid var(--yellow-dark); margin-bottom:16px; font-weight:600; }
-  .hero h1 { font-size:26px; font-weight:700; color:var(--yellow-deep); line-height:1.5; margin-bottom:12px; }
-  .hero p { color:#A08000; font-size:13px; line-height:1.8; max-width:320px; margin:0 auto 16px; }
-  .sister-badge { display:inline-block; background:var(--yellow-light); border:1px solid var(--yellow); color:var(--yellow-deep); font-size:11px; padding:4px 14px; border-radius:20px; font-weight:600; }
+/* ══════════════════════════════
+   SCREEN
+══════════════════════════════ */
+.screen { display:none; width:100%; height:100%; flex-direction:column; animation: si .4s ease forwards; }
+.screen.active { display:flex; }
+@keyframes si { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
 
+/* ══════════════════════════════
+   INTRO
+══════════════════════════════ */
+#s-intro {
+  flex-direction:row;
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+}
+.intro-left {
+  width:42%; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center; padding:4vh 4vw;
+  border-right:1px solid var(--border);
+}
+.intro-right {
+  flex:1; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  padding:4vh 4vw; gap:2vh;
+}
 
-  .step-label { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
-  .step-num { width:26px; height:26px; background:var(--yellow); color:var(--navy); border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .step-text { font-size:14px; font-weight:500; color:var(--navy); }
+.eyebrow {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.75rem,1.2vw,.95rem);
+  letter-spacing:.35em; color:var(--accent); margin-bottom:1.5vh;
+}
+/* メインタイトル：思いの綴 */
+.intro-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(2rem,5vw,4rem);
+  font-weight:400; line-height:1.4; margin-bottom:.8vh;
+  white-space:nowrap;
+}
+.title-yomi {
+  font-size:.42em;
+  font-weight:300;
+  color:var(--accent2);
+  letter-spacing:.05em;
+  vertical-align:middle;
+}
+.intro-title ruby { display:inline-flex; flex-direction:column-reverse; align-items:center; }
+.intro-title rt {
+  font-size:.32em; letter-spacing:.12em;
+  color:var(--accent2); font-family:'Zen Kaku Gothic New',sans-serif;
+  font-weight:400; line-height:1;
+}
+/* サブタイトル */
+.intro-subline {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.78rem,1.3vw,1rem);
+  font-weight:300; color:var(--faint);
+  letter-spacing:.06em; margin-bottom:2vh;
+}
+.intro-title em { font-style:normal; color:var(--accent); }
+.intro-desc {
+  font-size:clamp(.9rem,1.5vw,1.2rem);
+  color:var(--mid); line-height:2; margin-bottom:2vh;
+}
+.intro-tags { display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:2vh; }
+.tag {
+  font-size:clamp(.72rem,1.1vw,.9rem);
+  padding:5px 14px; border-radius:30px;
+  border:1px solid var(--border); color:var(--dim);
+}
+.intro-note { font-size:clamp(.7rem,1vw,.88rem); color:var(--faint); line-height:1.9; }
 
-  .input-card { background:#fff; border-radius:16px; border:1px solid var(--border); padding:20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(255,217,74,0.1); }
-  .selected-count { font-size:12px; color:var(--yellow-deep); font-weight:600; text-align:right; min-height:18px; margin-bottom:10px; }
+.btn-start {
+  background:linear-gradient(135deg,var(--accent),#e0a080);
+  color:#fff; border:none; border-radius:60px;
+  padding:clamp(.9rem,2vh,1.3rem) clamp(2.5rem,5vw,4rem);
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1rem,2.2vw,1.5rem);
+  font-weight:700; cursor:pointer; transition:all .3s;
+  box-shadow:0 6px 24px rgba(196,122,90,.3);
+  letter-spacing:.05em; width:100%; max-width:320px;
+}
+.btn-start:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(196,122,90,.45); }
 
-  .symptom-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .symptom-item { display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--border); cursor:pointer; transition:all 0.2s; user-select:none; font-size:13px; background:#fff; }
-  .symptom-item:hover { border-color:var(--yellow-dark); background:var(--yellow-light); }
-  .symptom-item.checked { border-color:var(--yellow-dark); background:var(--yellow-light); font-weight:500; }
-  .check-circle { width:18px; height:18px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; transition:all 0.2s; }
-  .symptom-item.checked .check-circle { background:var(--yellow-dark); border-color:var(--yellow-dark); color:#fff; }
+/* ══════════════════════════════
+   QUESTION SCREEN
+══════════════════════════════ */
+#s-q {
+  flex-direction:column;
+  background: var(--bg);
+}
 
-  .check-btn { width:100%; background:linear-gradient(135deg, var(--yellow) 0%, var(--yellow-dark) 100%); color:var(--navy); border:none; border-radius:14px; padding:16px; font-size:16px; font-weight:700; font-family:'Zen Maru Gothic',sans-serif; cursor:pointer; transition:opacity .2s,transform .1s; letter-spacing:.05em; margin-bottom:32px; box-shadow:0 4px 16px rgba(255,217,74,0.45); }
-  .check-btn:hover { opacity:.9; }
-  .check-btn:active { transform:scale(.98); }
-  .check-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+/* トップバー */
+.q-topbar {
+  flex-shrink:0;
+  height: 7vh; min-height:44px;
+  display:flex; align-items:center;
+  padding:0 3vw; gap:1.5vw;
+  border-bottom:1px solid var(--border);
+  background: var(--bg2);
+}
+.prog-chapter { font-size:clamp(.72rem,1.1vw,.9rem); color:var(--accent); letter-spacing:.1em; font-weight:700; }
+.prog-bar-wrap { flex:1; height:6px; background:var(--pink); border-radius:6px; overflow:hidden; }
+.prog-fill { height:100%; background:linear-gradient(90deg,var(--accent),#e0a080); transition:width .5s ease; }
+.prog-count { font-size:clamp(.72rem,1.1vw,.9rem); color:var(--dim); white-space:nowrap; }
+.prog-dots { display:flex; gap:5px; }
+.pdot { width:8px; height:8px; border-radius:50%; background:var(--faint); transition:all .3s; flex-shrink:0; }
+.pdot.done { background:rgba(196,122,90,.5); }
+.pdot.cur  { background:var(--accent); transform:scale(1.4); }
 
-  .result-section { display:none; }
-  .result-section.show { display:block; animation:fadeUp .4s ease; }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+/* メイン2カラム */
+.q-body {
+  flex:1; display:flex; overflow:hidden;
+}
 
-  .result-header { font-size:15px; font-weight:700; color:var(--navy); margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--yellow-light); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-  .result-summary { font-size:12px; color:var(--gray); font-weight:400; }
+/* 左：問い */
+.q-left {
+  width:35%; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center;
+  padding:3vh 3vw;
+  border-right:1px solid var(--border);
+  background: var(--bg2);
+}
+.q-chapter-label {
+  font-size:clamp(.7rem,1vw,.88rem);
+  color:var(--accent2); letter-spacing:.12em; margin-bottom:1.2vh;
+}
+.q-text {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1.2rem,2.8vw,2.2rem);
+  font-weight:400; line-height:1.65;
+  margin-bottom:1.5vh; white-space:pre-wrap;
+  color:var(--deep);
+}
+.q-sub {
+  font-size:clamp(.75rem,1.1vw,.95rem);
+  color:var(--dim); line-height:1.9;
+}
 
-  .nutrient-card { border-radius:14px; padding:18px; margin-bottom:12px; border-left:4px solid; animation:slideIn .25s ease; }
-  .nutrient-card.priority-high { border-color:var(--warn); background:var(--warn-light); }
-  .nutrient-card.priority-mid  { border-color:var(--yellow-dark); background:var(--yellow-light); }
+/* 右：選択肢 + 戻る */
+.q-right {
+  flex:1; height:100%;
+  display:flex; flex-direction:column;
+  padding:2vh 2.5vw; gap:1.5vh;
+  overflow:hidden;
+}
 
-  .result-level { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
-  .level-badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:.05em; white-space:nowrap; color:#fff; }
-  .priority-high .level-badge { background:var(--warn); }
-  .priority-mid  .level-badge { background:var(--yellow-deep); }
+/* 選択肢グリッド */
+.choices {
+  flex:1;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:1vh 1.2vw;
+  overflow:hidden;
+}
 
-  .result-combo { font-size:14px; font-weight:700; color:var(--navy); }
-  .result-desc  { font-size:13px; color:#4a5c6a; line-height:1.7; margin:6px 0 10px; }
+.choice-btn {
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:16px;
+  padding:1.4vh 1.2vw;
+  cursor:pointer; text-align:left;
+  transition:all .22s;
+  box-shadow:var(--shadow);
+  display:flex; flex-direction:column; justify-content:flex-start;
+  overflow:hidden;
+}
+.choice-btn:hover {
+  background:var(--card-hover);
+  border-color:rgba(196,122,90,.45);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(196,122,90,.2);
+}
+.choice-btn.selected {
+  background:var(--card-sel);
+  border-color:var(--border-sel);
+  box-shadow:var(--shadow-sel);
+  transform:scale(1.02);
+}
 
-  .symptom-tags { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
-  .symptom-tag { font-size:11px; padding:3px 8px; border-radius:20px; border:1px solid; }
-  .priority-high .symptom-tag { background:rgba(224,122,58,0.1); color:var(--warn); border-color:var(--warn); }
-  .priority-mid  .symptom-tag { background:rgba(255,217,74,0.25); color:var(--yellow-deep); border-color:var(--yellow); }
+.ce { font-size:clamp(1.1rem,2.2vh,1.7rem); display:block; margin-bottom:.4vh; }
+.cm {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.82rem,1.6vh,1.15rem);
+  font-weight:700; color:var(--deep);
+  display:block; margin-bottom:.2vh; line-height:1.3;
+}
+.cd {
+  font-size:clamp(.68rem,1.2vh,.9rem);
+  color:var(--dim); display:block; line-height:1.5;
+}
 
-  .result-source { display:flex; align-items:flex-start; gap:5px; margin-bottom:12px; padding:8px 10px; background:rgba(0,0,0,.04); border-radius:8px; font-size:11px; color:var(--gray); line-height:1.6; }
+/* 戻るエリア */
+.back-area {
+  flex-shrink:0;
+  display:flex; align-items:center; gap:1vw;
+  padding:.8vh 1vw;
+  background:var(--pink); border-radius:12px;
+  flex-wrap:wrap;
+}
+.back-label { font-size:clamp(.7rem,1vw,.88rem); color:var(--dim); white-space:nowrap; }
+.back-btns { display:flex; gap:.6vw; }
+.btn-bn, .btn-by {
+  border-radius:40px; padding:.45vh 1.2vw;
+  font-size:clamp(.72rem,1.1vw,.9rem);
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-weight:700; cursor:pointer; transition:all .2s; border:none; white-space:nowrap;
+}
+.btn-bn { background:#fff; color:var(--dim); border:1.5px solid var(--faint); }
+.btn-bn:hover { border-color:var(--dim); color:var(--deep); }
+.btn-by { background:rgba(196,122,90,.12); color:var(--accent); border:1.5px solid rgba(196,122,90,.35); }
+.btn-by:hover { background:rgba(196,122,90,.25); }
 
-  .food-sources { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
-  .food-tag { background:#FFF8E1; color:#8B6914; font-size:11px; padding:3px 8px; border-radius:6px; border:1px solid var(--yellow); }
+.back-q-list {
+  display:none; width:100%; flex-wrap:wrap; gap:.5vw; margin-top:.5vh;
+}
+.back-q-list.open { display:flex; }
+.btn-bq {
+  background:#fff; border:1.5px solid var(--border); border-radius:10px;
+  padding:.4vh 1vw; color:var(--mid);
+  font-size:clamp(.66rem,.95vw,.82rem);
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  cursor:pointer; text-align:left; transition:all .2s; line-height:1.5; white-space:nowrap;
+}
+.btn-bq:hover { border-color:var(--accent); color:var(--accent); }
 
-  .affiliate-btn { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:12px; background:linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color:var(--navy); border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; text-decoration:none; transition:all 0.2s; box-shadow:0 3px 10px rgba(255,217,74,0.35); font-family:'Zen Maru Gothic',sans-serif; }
-  .affiliate-btn:hover { transform:translateY(-1px); box-shadow:0 5px 15px rgba(255,217,74,0.5); }
+/* ══════════════════════════════
+   RESULT
+══════════════════════════════ */
+#s-result {
+  flex-direction:row;
+  background: var(--bg);
+}
 
-  .cta-card { background:linear-gradient(135deg,var(--navy) 0%,var(--navy-soft) 100%); border-radius:16px; padding:24px 20px; text-align:center; margin-top:24px; position:relative; overflow:hidden; }
-  .cta-card::before { content:''; position:absolute; width:120px; height:120px; background:var(--yellow); opacity:.08; border-radius:50%; top:-40px; right:-30px; }
-  .cta-icon { font-size:36px; margin-bottom:10px; }
-  .cta-title { font-size:16px; font-weight:700; color:#fff; margin-bottom:8px; }
-  .cta-desc { font-size:12px; color:rgba(255,255,255,.65); line-height:1.7; margin-bottom:18px; }
-  .cta-btn { display:inline-block; background:var(--yellow); color:var(--navy); text-decoration:none; border-radius:10px; padding:12px 28px; font-size:14px; font-weight:700; font-family:'Zen Maru Gothic',sans-serif; transition:background .2s; }
-  .cta-btn:hover { background:var(--yellow-dark); }
+.result-left {
+  width:30%; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center;
+  padding:4vh 3vw;
+  border-right:1px solid var(--border);
+  background: var(--bg2);
+  gap:2vh;
+}
+.result-eyebrow {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.72rem,1vw,.9rem); letter-spacing:.3em; color:var(--accent);
+}
+.result-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1.2rem,2.8vw,2rem);
+  font-weight:300; line-height:1.5; color:var(--deep);
+}
+.result-actions { display:flex; flex-direction:column; gap:1vh; }
+.btn-print, .btn-copy {
+  border-radius:14px; padding:.8vh 1.5vw;
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.8rem,1.4vw,1.1rem);
+  font-weight:700; cursor:pointer; transition:all .3s; border:none;
+  text-align:center;
+}
+.btn-print {
+  background:linear-gradient(135deg,var(--accent),#e0a080);
+  color:#fff; box-shadow:0 4px 16px rgba(196,122,90,.25);
+}
+.btn-print:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(196,122,90,.4); }
+.btn-copy {
+  background:#fff; color:var(--mid);
+  border:1.5px solid var(--border);
+}
+.btn-copy:hover { border-color:var(--accent); }
+.btn-restart {
+  background:none; border:none; color:var(--faint);
+  font-size:clamp(.68rem,.95vw,.82rem); cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px; transition:color .2s;
+}
+.btn-restart:hover { color:var(--dim); }
+.result-note { font-size:clamp(.63rem,.9vw,.8rem); color:var(--faint); line-height:1.8; }
 
+/* ── カード本体（右側スクロール可） ── */
+.result-right {
+  flex:1; height:100%; overflow-y:auto;
+  padding:2vh 2.5vw;
+}
 
-  /* 目的ボタン */
-  .purpose-section { margin-bottom: 28px; }
-  .purpose-title { font-size: 13px; font-weight: 600; color: var(--navy-soft); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-  .purpose-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .purpose-btn {
-    background: #fff;
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Zen Maru Gothic', sans-serif;
-    position: relative;
-    overflow: hidden;
+/* ── まとめシート本体 ── */
+.result-card {
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:2.2vh 2.2vw;
+  box-shadow: 0 4px 24px rgba(196,122,90,.1);
+}
+
+/* ヘッダー：タイトル＋回答日 */
+.rc-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:2vh; padding-bottom:1.5vh;
+  border-bottom:2px solid var(--border);
+}
+.rc-head-left { display:flex; flex-direction:column; gap:.3vh; }
+.rc-app-name {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.72rem,1vw,.88rem);
+  color:var(--accent); letter-spacing:.25em;
+}
+.rc-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1rem,1.8vw,1.4rem);
+  font-weight:600; color:var(--deep);
+}
+.rc-head-right { text-align:right; }
+.rc-date-label {
+  font-size:clamp(.62rem,.85vw,.78rem);
+  color:var(--faint); margin-bottom:.2vh;
+}
+.rc-date {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1.2rem,2.8vw,2rem);
+  font-weight:700; color:var(--deep);
+}
+
+/* カテゴリグループ */
+.rc-cats { display:flex; flex-direction:column; gap:1.5vh; }
+.rc-cat {
+  background:var(--bg);
+  border-radius:14px;
+  overflow:hidden;
+}
+.rc-cat-head {
+  display:flex; align-items:center; gap:.6vw;
+  padding:.7vh 1.2vw;
+  background:linear-gradient(90deg, rgba(196,122,90,.15), rgba(196,122,90,.04));
+  border-bottom:1px solid var(--border);
+}
+.rc-cat-icon { font-size:clamp(.9rem,1.5vw,1.1rem); }
+.rc-cat-name {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.72rem,1.1vw,.9rem);
+  font-weight:700; color:var(--accent);
+  letter-spacing:.06em;
+}
+.rc-cat-rows {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:0;
+}
+.rc-row {
+  display:flex; flex-direction:column;
+  padding:.8vh 1.2vw;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.rc-row:nth-child(even) { border-right:none; }
+.rc-row:last-child, .rc-row:nth-last-child(2):nth-child(odd) { border-bottom:none; }
+.rc-label {
+  font-size:clamp(.6rem,.85vw,.78rem);
+  color:var(--accent2); font-weight:700;
+  letter-spacing:.06em; margin-bottom:.3vh;
+}
+.rc-val {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.85rem,1.5vw,1.15rem);
+  font-weight:700; color:var(--deep); line-height:1.4;
+}
+.rc-val.skip {
+  color:var(--faint); font-style:italic;
+  font-size:clamp(.72rem,1.1vw,.88rem); font-weight:400;
+}
+.rc-foot {
+  margin-top:1.5vh; padding-top:1.2vh;
+  border-top:1px solid var(--border);
+  font-size:clamp(.6rem,.85vw,.78rem);
+  color:var(--faint); text-align:center; line-height:1.9;
+}
+
+/* ══════════════════════════════
+   印刷
+══════════════════════════════ */
+@media print {
+  @page { size:A4 portrait; margin:12mm 15mm; }
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #launch-msg, .result-left, .q-topbar { display:none !important; }
+  html, body {
+    width:210mm !important; height:auto !important;
+    overflow:visible !important; background:#fff !important;
   }
-  .purpose-btn:hover { border-color: var(--yellow-dark); background: var(--yellow-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,217,74,0.25); }
-  .purpose-btn.active { border-color: var(--yellow-dark); background: var(--yellow-light); box-shadow: 0 4px 12px rgba(255,217,74,0.3); }
-  .purpose-emoji { font-size: 22px; display: block; margin-bottom: 4px; }
-  .purpose-name { font-size: 11px; font-weight: 700; color: var(--navy); display: block; margin-bottom: 2px; }
-  .purpose-sub  { font-size: 9px; color: var(--gray); display: block; line-height: 1.3; }
-  .purpose-badge { position: absolute; top: 6px; right: 6px; background: var(--yellow); color: var(--navy); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
-
-  .or-divider { text-align: center; font-size: 12px; color: var(--gray); margin: 20px 0 12px; display: flex; align-items: center; gap: 10px; }
-  .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* 目的結果バナー */
-  .purpose-header-card {
-    border-radius: 14px;
-    padding: 16px 18px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  #app { width:210mm !important; height:auto !important; display:block !important; overflow:visible !important; }
+  .screen { display:none !important; height:auto !important; }
+  #s-result {
+    display:block !important; width:100% !important; height:auto !important;
+    flex-direction:column !important;
   }
-  .purpose-header-card.kafunsho { background: linear-gradient(135deg,#FFF0F5,#fff); border: 1.5px solid #FFB3C6; }
-  .purpose-header-card.immune   { background: linear-gradient(135deg,#F0FFF0,#fff); border: 1.5px solid #A8D5BE; }
-  .purpose-header-card.fatigue  { background: linear-gradient(135deg,#FFFDE7,#fff); border: 1.5px solid var(--yellow); }
-  .purpose-header-card.muscle    { background: linear-gradient(135deg,#EEF2FF,#fff); border: 1.5px solid #A5B4FC; }
-  .purpose-header-card.sleep     { background: linear-gradient(135deg,#F0F0FF,#fff); border: 1.5px solid #C4B5FD; }
-  .purpose-header-card.brain     { background: linear-gradient(135deg,#EFF6FF,#fff); border: 1.5px solid #93C5FD; }
-  .purpose-header-card.beauty    { background: linear-gradient(135deg,#FDF2F8,#fff); border: 1.5px solid #F0ABFC; }
-  .purpose-header-card.maternity { background: linear-gradient(135deg,#FFF0F5,#fff); border: 1.5px solid #FDA4AF; }
-  .purpose-header-card.bone      { background: linear-gradient(135deg,#ECFDF5,#fff); border: 1.5px solid #6EE7B7; }
-  .purpose-header-card.lifestyle { background: linear-gradient(135deg,#F0F9FF,#fff); border: 1.5px solid #7DD3FC; }
-  .purpose-header-icon { font-size: 36px; flex-shrink: 0; }
-  .purpose-header-title { font-size: 15px; font-weight: 700; color: var(--navy); }
-  .purpose-header-sub { font-size: 12px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
-  .disclaimer { background:var(--gray-light); border-radius:10px; padding:14px 16px; margin-top:20px; font-size:11px; color:var(--gray); line-height:1.7; border:1px solid var(--border); }
-  .disclaimer strong { color:var(--navy-soft); }
+  .result-right {
+    width:100% !important; height:auto !important;
+    overflow:visible !important; padding:0 !important;
+  }
+  .result-card {
+    border:1px solid #ddd !important; box-shadow:none !important;
+    padding:8mm !important; border-radius:4mm !important;
+  }
+  .rc-date { font-size:20pt !important; color:#2a1f1a !important; }
+  .rc-rows { grid-template-columns:1fr 1fr !important; gap:4mm 6mm !important; }
+  .rc-row { background:#fdf6f0 !important; border-radius:3mm !important; padding:3mm 4mm !important; }
+  .rc-row.answered { border-left:2mm solid #c47a5a !important; }
+  .rc-label { color:#9b7c6e !important; font-size:7pt !important; }
+  .rc-val { color:#2a1f1a !important; font-size:11pt !important; }
+  .rc-val.skip { color:#aaa !important; font-size:9pt !important; }
+}
 
-  .reset-btn { width:100%; padding:12px; background:transparent; color:var(--gray); border:1.5px solid var(--border); border-radius:10px; font-size:13px; cursor:pointer; margin-top:12px; font-family:'Zen Maru Gothic',sans-serif; transition:all 0.2s; }
-  .reset-btn:hover { border-color:var(--yellow-dark); color:var(--yellow-deep); }
+/* ── スクショ全画面モード ── */
+#screenshot-overlay {
+  display:none;
+  position:fixed; inset:0; z-index:9000;
+  background:rgba(42,31,26,.5);
+  flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:4vw;
+  overflow:auto;
+}
+#screenshot-overlay.open { display:flex; }
 
-  .no-hit-card { border-radius:14px; padding:20px; background:var(--safe-light); border:1px solid #a9dfbf; text-align:center; }
-  .no-hit-icon { font-size:32px; margin-bottom:8px; }
-  .no-hit-title { font-size:15px; font-weight:600; color:var(--safe); margin-bottom:6px; }
-  .no-hit-desc { font-size:12px; color:#4a5c6a; line-height:1.7; }
-  .sns-bar { background: var(--navy); padding: 8px 16px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-  .sns-bar-text { font-size: 11px; color: rgba(255,255,255,.6); }
-  .sns-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-decoration: none; transition: opacity .2s; white-space: nowrap; }
-  .sns-btn:hover { opacity: .85; }
-  .sns-x { background: #000; color: #fff; }
-  .sns-line { background: #06C755; color: #fff; }
-  .container { max-width:480px; margin:0 auto; padding:32px 20px 100px; }
+/* ss-card：iPhoneの横画面サイズに合わせた横長カード */
+.ss-card {
+  width:100%;
+  max-width:min(96vw, 900px);
+  background:#fff;
+  border-radius:3vw; overflow:hidden;
+  box-shadow:0 8px 40px rgba(42,31,26,.3);
+}
+/* スクショシートヘッダー */
+.ss-head {
+  background:linear-gradient(135deg,var(--bg2),var(--pink));
+  padding:2.5vw 3vw;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:2px solid var(--border);
+}
+.ss-head-left { display:flex; flex-direction:column; gap:.3vw; }
+.ss-app-name {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.7rem,1.8vw,.9rem); color:var(--accent);
+  letter-spacing:.3em; display:block;
+}
+.ss-sheet-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1rem,2.8vw,1.4rem);
+  font-weight:600; color:var(--deep);
+  display:block;
+}
+.ss-subtitle-small {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.68rem,1.8vw,.88rem);
+  color:var(--accent2); display:block;
+  font-weight:300; letter-spacing:.06em;
+}
+.ss-head-right { text-align:right; }
+.ss-date-label {
+  font-size:clamp(.62rem,1.5vw,.78rem);
+  color:var(--faint); display:block; margin-bottom:.3vw;
+}
+.ss-date {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1.4rem,4vw,2.2rem);
+  font-weight:700; color:var(--deep); display:block;
+}
+/* カテゴリ：3列×2行グリッド */
+.ss-cats {
+  padding:2vw 2.5vw;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:2vw;
+}
+.ss-cat { background:var(--bg); border-radius:2vw; overflow:hidden; }
+.ss-cat-head {
+  display:flex; align-items:center; gap:1.5vw;
+  padding:1.5vw 2vw;
+  background:linear-gradient(90deg, rgba(196,122,90,.18), rgba(196,122,90,.04));
+  border-bottom:1px solid var(--border);
+}
+.ss-cat-icon { font-size:clamp(.9rem,2.5vw,1.1rem); }
+.ss-cat-name {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.75rem,2vw,.95rem);
+  font-weight:700; color:var(--accent);
+}
+.ss-cat-rows { display:grid; grid-template-columns:1fr 1fr; }
+.ss-row {
+  padding:1.5vw 2vw;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.ss-row:nth-child(even){ border-right:none; }
+.ss-row:last-child,.ss-row:nth-last-child(2):nth-child(odd){ border-bottom:none; }
+.ss-label {
+  font-size:clamp(.6rem,1.6vw,.78rem);
+  color:var(--accent2); font-weight:700;
+  margin-bottom:.5vw; display:block;
+}
+.ss-val {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.82rem,2.2vw,1.1rem);
+  font-weight:700; color:var(--deep); line-height:1.4;
+  display:block;
+}
+.ss-val.skip { color:var(--faint); font-weight:400; font-style:italic; }
+.ss-footer {
+  padding:1.5vw 2.5vw;
+  border-top:1px solid var(--border);
+  font-size:clamp(.6rem,1.6vw,.78rem);
+  color:var(--faint); text-align:center; line-height:1.8;
+  background:var(--bg2);
+}
+.ss-close-hint {
+  margin-top:4vw;
+  background:var(--accent); color:#fff;
+  border:none; border-radius:50px;
+  padding:3vw 8vw;
+  font-size:clamp(1rem,3.5vw,1.4rem);
+  font-family:'Noto Serif JP',serif; font-weight:700;
+  cursor:pointer; width:100%; max-width:400px;
+  flex-shrink:0;
+}
+
+
+/* ── 保存方法ボタン ── */
+.btn-screenshot {
+  background:#fff; color:var(--accent);
+  border:2px solid var(--accent);
+  border-radius:14px; padding:.8vh 1.5vw;
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.8rem,1.4vw,1.1rem);
+  font-weight:700; cursor:pointer; transition:all .3s;
+  text-align:center;
+}
+.btn-screenshot:hover { background:var(--bg2); }
+.save-label {
+  font-size:clamp(.65rem,.9vw,.82rem);
+  color:var(--faint); margin-top:.3vh;
+  text-align:center;
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <svg height="38" viewBox="0 0 240 50" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-      <g transform="rotate(-38,22,25)">
-        <rect x="8" y="18" width="14" height="14" rx="7" fill="#F0F0F0"/>
-        <rect x="22" y="18" width="14" height="14" rx="7" fill="#FFD94A"/>
-        <line x1="22" y1="18" x2="22" y2="32" stroke="#ddd" stroke-width="1" opacity="0.7"/>
-      </g>
-      <text x="44" y="33" font-size="22" font-weight="900" fill="#C89600" font-family="'Fredoka One',cursive">Eiyo</text>
-      <text x="46" y="46" font-size="10" fill="#F0B800" font-family="'Hiragino Kaku Gothic ProN',sans-serif" letter-spacing="1">チェッカー</text>
-    </svg>
+<!-- 起動時オーバーレイ（3秒で消える） -->
+<div id="launch-msg">
+  <div class="launch-icon">📱</div>
+  <p>このアプリは<strong>横向き</strong>で<br>ご利用ください。</p>
+  <button class="skip-btn" onclick="dismissLaunch()">すぐに始める →</button>
+</div>
+
+<div id="app">
+
+  <!-- ① イントロ -->
+  <div class="screen active" id="s-intro">
+    <div class="intro-left">
+      <div class="eyebrow">A · C · P &nbsp; Advance Care Planning</div>
+      <h1 class="intro-title">思いの綴<span class="title-yomi">－おもいのと－</span></h1>
+      <p class="intro-subline">もしものとき、わたしのこと。</p>
+      <p class="intro-desc">
+        もし体の具合が悪くなったとき、<br>
+        あなたはどんなふうに過ごしたいですか？<br><br>
+        答えはひとつじゃなくていい。<br>
+        ゆっくり、自分のペースで考えてみましょう。
+      </p>
+      <div class="intro-tags">
+        <span class="tag">📖 全12問</span>
+        <span class="tag">⏱ 約10分</span>
+        <span class="tag">🖨 結果カード印刷OK</span>
+        <span class="tag">↩ いつでも戻れる</span>
+      </div>
+      <p class="intro-note">
+        このツールは医療的な指示ではありません。<br>
+        答えたくない質問はスキップできます。<br>
+        結果は家族や医療者との対話のきっかけにしてください。
+      </p>
+    </div>
+    <div class="intro-right">
+      <button class="btn-start" onclick="startQuiz()">は じ め る</button>
+    </div>
   </div>
-  <div style="display:flex;gap:6px;">
-    <span class="badge">薬剤師監修</span>
-    <span class="badge badge-sister">姉妹アプリ</span>
-  </div>
-</header>
 
-<!-- SNSバー -->
-<div class="sns-bar">
-  <span class="sns-bar-text">くすりのたまをフォロー →</span>
-  <a href="https://twitter.com/Yutaknz25" target="_blank" class="sns-btn sns-x">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-    X（@Yutaknz25）
-  </a>
-  <a href="https://line.me/R/ti/p/@371sydfn" target="_blank" class="sns-btn sns-line">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.63 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-    公式LINE
-  </a>
-</div>
+  <!-- ② 質問 -->
+  <div class="screen" id="s-q">
+    <!-- トップバー -->
+    <div class="q-topbar">
+      <span class="prog-chapter" id="prog-ch">Chapter 1</span>
+      <div class="prog-bar-wrap"><div class="prog-fill" id="prog-f" style="width:0%"></div></div>
+      <div class="prog-dots" id="prog-dots"></div>
+      <span class="prog-count" id="prog-ct">1 / 12</span>
+    </div>
 
-<!-- フッター固定SNSボタン -->
-<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--yellow);padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,0.08);">
-  <a href="https://twitter.com/Yutaknz25" target="_blank" class="sns-btn sns-x" style="font-size:12px;padding:8px 16px;">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-    Xをフォロー
-  </a>
-  <a href="https://line.me/R/ti/p/@371sydfn" target="_blank" class="sns-btn sns-line" style="font-size:12px;padding:8px 16px;">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.63 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-    LINEで友達追加
-  </a>
-</div>
-
-<div class="hero">
-  <div class="hero-tag">✦ 無料で今すぐチェック</div>
-  <h1>その症状、<br>栄養素が足りてない？</h1>
-  <p>疲れ・冷え・肌荒れなど気になる症状から、不足しがちな栄養素を根拠をもとにチェックします。</p>
-  <a href="https://nomiawase-checker-v1.netlify.app" target="_blank" class="sister-badge">🍊 のみあわせチェッカー 姉妹アプリ →</a>
-</div>
-
-<div class="container">
-
-  <div id="symptom-section">
-    <!-- 目的から選ぶ -->
-    <div class="purpose-section">
-      <div class="purpose-title">⚡ 目的から選んでチェック</div>
-      <div class="purpose-grid">
-        <button class="purpose-btn" onclick="selectPurpose('kafunsho')">
-          <span class="purpose-badge">旬</span>
-          <span class="purpose-emoji">🌸</span>
-          <span class="purpose-name">花粉症対策</span>
-          <span class="purpose-sub">免疫・アレルギー</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('immune')">
-          <span class="purpose-emoji">🛡️</span>
-          <span class="purpose-name">免疫アップ</span>
-          <span class="purpose-sub">風邪予防・体の底力</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('fatigue')">
-          <span class="purpose-emoji">🔋</span>
-          <span class="purpose-name">疲労・元気がない</span>
-          <span class="purpose-sub">だるさ・集中力低下</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('muscle')">
-          <span class="purpose-emoji">💪</span>
-          <span class="purpose-name">筋トレ・運動</span>
-          <span class="purpose-sub">パフォーマンス向上</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('sleep')">
-          <span class="purpose-emoji">😴</span>
-          <span class="purpose-name">睡眠・不眠</span>
-          <span class="purpose-sub">寝つき・睡眠の質</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('brain')">
-          <span class="purpose-emoji">🧠</span>
-          <span class="purpose-name">集中力・メンタル</span>
-          <span class="purpose-sub">仕事・勉強・気分</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('beauty')">
-          <span class="purpose-emoji">💆</span>
-          <span class="purpose-name">肌・美容</span>
-          <span class="purpose-sub">ツヤ・ハリ・乾燥</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('maternity')">
-          <span class="purpose-emoji">🤰</span>
-          <span class="purpose-name">妊活・妊娠中</span>
-          <span class="purpose-sub">赤ちゃんのために</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('bone')">
-          <span class="purpose-emoji">🦴</span>
-          <span class="purpose-name">骨・関節</span>
-          <span class="purpose-sub">骨密度・関節ケア</span>
-        </button>
-        <button class="purpose-btn" onclick="selectPurpose('lifestyle')">
-          <span class="purpose-emoji">🩺</span>
-          <span class="purpose-name">生活習慣病予防</span>
-          <span class="purpose-sub">血圧・血糖・コレステロール</span>
-        </button>
+    <!-- 本体 -->
+    <div class="q-body">
+      <div class="q-left">
+        <div class="q-chapter-label" id="q-cl"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-sub" id="q-sub"></div>
+      </div>
+      <div class="q-right">
+        <div class="choices" id="choices"></div>
+        <div class="back-area" id="back-area">
+          <span class="back-label">前の質問に戻りますか？</span>
+          <div class="back-btns">
+            <button class="btn-bn" onclick="backNo()">そのまま進む</button>
+            <button class="btn-by" onclick="backYes()">↩ 戻りたい</button>
+          </div>
+          <div class="back-q-list" id="back-list"></div>
+        </div>
       </div>
     </div>
-
-    <div class="or-divider">または症状から選ぶ</div>
-
-    <div class="step-label">
-      <div class="step-num">1</div>
-      <div class="step-text">気になる症状をすべて選んでください</div>
-    </div>
-    <div class="input-card">
-      <div class="selected-count" id="selected-count"></div>
-      <div class="symptom-grid" id="symptom-grid"></div>
-    </div>
-    <button class="check-btn" id="check-btn" onclick="showResult()" disabled>
-      🔍 栄養素をチェックする
-    </button>
   </div>
 
-  <div class="result-section" id="result-section">
-    <div class="step-label">
-      <div class="step-num">2</div>
-      <div class="result-header">
-        チェック結果
-        <span class="result-summary" id="result-summary"></span>
+  <!-- ③ 結果 -->
+  <div class="screen" id="s-result">
+    <div class="result-left">
+      <div class="result-eyebrow">Your ACP Card</div>
+      <h2 class="result-title">あなたの想いを<br>まとめました</h2>
+      <div class="result-actions">
+        <button class="btn-print" id="btn-img" onclick="saveImage()">🖼️ 画像として保存・シェア</button>
+        <div class="save-label">写真アプリ・LINEで共有OK</div>
+        <button class="btn-copy" onclick="copyText()">📋 テキストコピー</button>
+      </div>
+      <button class="btn-restart" onclick="restartQuiz()">もう一度はじめる</button>
+      <p class="result-note">
+        このカードは意思決定の強制ではありません。<br>
+        大切な決断は必ず医療者や家族と相談してください。
+      </p>
+    </div>
+    <div class="result-right">
+      <div class="result-card" id="rc-card">
+        <div class="rc-head">
+          <div class="rc-head-left">
+            <div class="rc-app-name">Advance Care Planning</div>
+            <div class="rc-title">思いの綴－おもいのと－</div>
+          </div>
+          <div class="rc-head-right">
+            <div class="rc-date-label">回答日</div>
+            <div class="rc-date" id="rc-date"></div>
+          </div>
+        </div>
+        <div class="rc-cats" id="rc-cats"></div>
+        <div class="rc-foot">
+          このカードはあなたの今の気持ちです。いつでも変えられます。<br>
+          家族や医療者と一緒に見ながら話し合うきっかけにしてください。
+        </div>
       </div>
     </div>
-    <div id="result-list"></div>
-
-    <div class="cta-card">
-      <div class="cta-icon">💊</div>
-      <div class="cta-title">薬の飲み合わせも確認しよう</div>
-      <div class="cta-desc">サプリと薬の組み合わせが心配な方は<br>姉妹アプリ「のみあわせチェッカー」へ</div>
-      <a href="https://nomiawase-checker.netlify.app" target="_blank" class="cta-btn">のみあわせチェッカーへ →</a>
-    </div>
-
-    <div class="disclaimer">
-      <strong>⚠️ ご注意</strong><br>
-      このアプリは医療診断を行うものではありません。症状の原因は栄養不足以外にも考えられます。気になる症状が続く場合は医師・薬剤師にご相談ください。<br>
-      根拠：厚生労働省「日本人の食事摂取基準（2020年版）」、WHO資料および各種査読論文に基づきます。
-    </div>
-    <button class="reset-btn" onclick="resetAll()">← 最初からやり直す</button>
   </div>
 
+</div><!-- /app -->
+
+<!-- スクショ全画面オーバーレイ -->
+<div id="screenshot-overlay">
+  <div class="ss-card" id="ss-card-el">
+    <div class="ss-head">
+      <div class="ss-head-left">
+        <span class="ss-app-name">Advance Care Planning</span>
+        <span class="ss-sheet-title">思いの綴－おもいのと－</span>
+        <span class="ss-subtitle-small">もしものとき、わたしのこと。</span>
+      </div>
+      <div class="ss-head-right">
+        <span class="ss-date-label">回答日</span>
+        <span class="ss-date" id="ss-date"></span>
+      </div>
+    </div>
+    <div class="ss-cats" id="ss-cats"></div>
+    <div class="ss-footer">
+      このカードはあなたの今の気持ちです。いつでも変えられます。<br>
+      家族や医療者と一緒に見ながら話し合うきっかけにしてください。
+    </div>
+  </div>
+  <button class="ss-close-hint" onclick="closeScreenshot()">
+    ↑ スクショを撮ったら閉じる
+  </button>
+</div>
 </div>
 
 <script>
-const SYMPTOMS = [
-  { id:'fatigue',     label:'疲れやすい・だるい',    emoji:'😴' },
-  { id:'cold',        label:'手足が冷える',           emoji:'🥶' },
-  { id:'hair',        label:'髪が抜ける・薄い',       emoji:'💇' },
-  { id:'skin',        label:'肌荒れ・乾燥',           emoji:'🌵' },
-  { id:'nail',        label:'爪が割れやすい',         emoji:'💅' },
-  { id:'muscle',      label:'こむら返り・筋がつる',   emoji:'🦵' },
-  { id:'concentrate', label:'集中できない・ぼーっと', emoji:'🧠' },
-  { id:'mood',        label:'気分が沈みがち',         emoji:'☁️' },
-  { id:'sleep',       label:'眠れない・寝つきが悪い', emoji:'🌙' },
-  { id:'bone',        label:'骨・関節が気になる',     emoji:'🦴' },
-  { id:'immune',      label:'風邪をひきやすい',       emoji:'🤧' },
-  { id:'eye',         label:'目が疲れる・かすむ',     emoji:'👁️' },
-  { id:'appetite',    label:'食欲がわかない',         emoji:'🍽️' },
-  { id:'tongue',      label:'口内炎ができやすい',     emoji:'👄' },
-  { id:'swollen',     label:'むくみやすい',           emoji:'💧' },
-  { id:'heart',       label:'動悸・息切れ',           emoji:'💓' },
+/* ══ 質問データ ══ */
+const QS=[
+  {ch:"Chapter 1 · 大切にしていること",text:"毎日の生活で\n一番大切にしていることは\n何ですか？",sub:"直感で選んでみてください。正解はありません。",key:"value",
+   c:[{e:"🏡",m:"家族・大切な人と過ごす時間",d:"そばにいること、話すこと"},
+      {e:"🌿",m:"自分らしく・自由に生きること",d:"自分のペースで決めたい"},
+      {e:"😌",m:"苦しまずに穏やかでいること",d:"痛みや不安のないおだやかな日々"},
+      {e:"🤝",m:"人の役に立つこと",d:"誰かのため、つながっていたい"},
+      {e:"🎨",m:"好きなこと・趣味を続けること",d:"楽しみや生きがいを持ち続けたい"},
+      {e:"🙏",m:"信仰・精神的なつながり",d:"宗教や信念に従って生きたい"}]},
+  {ch:"Chapter 1 · 大切にしていること",text:"体の具合が悪くなったとき、\n一番心配なことは\n何ですか？",sub:"今の正直な気持ちを教えてください。",key:"fear",
+   c:[{e:"😔",m:"家族に迷惑をかけること",d:"介護や経済的な負担をかけたくない"},
+      {e:"😣",m:"痛みや苦しさが続くこと",d:"体の辛さに耐えなければならない状況"},
+      {e:"🔇",m:"自分で決められなくなること",d:"意識や判断力を失い選べなくなること"},
+      {e:"🏥",m:"病院から出られなくなること",d:"慣れない場所で過ごすこと"},
+      {e:"👤",m:"ひとりになってしまうこと",d:"孤独な状況で過ごすこと"},
+      {e:"💸",m:"お金・生活のこと",d:"治療費が家族の負担になること"}]},
+  {ch:"Chapter 2 · 過ごしたい場所",text:"もし病気が重くなったとき、\nどこで過ごしたいですか？",sub:"「今の気持ち」で。状況によって変わってもOKです。",key:"place",
+   c:[{e:"🏠",m:"できるだけ自宅にいたい",d:"住み慣れた場所で家族と"},
+      {e:"🏥",m:"病院でしっかり診てもらいたい",d:"医療がすぐそばにある環境が安心"},
+      {e:"🌸",m:"ホスピス・緩和ケア病棟で",d:"苦痛を和らげることを中心にした場所"},
+      {e:"🏘",m:"施設・グループホームで",d:"専門的なケアを受けながら"},
+      {e:"💭",m:"状態によって決めたい",d:"一概には言えない、柔軟に考えたい"},
+      {e:"🤷",m:"まだよくわからない",d:"もっと知ってから考えたい"}]},
+  {ch:"Chapter 2 · 過ごしたい場所",text:"最期のとき、\n誰にそばにいてほしいですか？",sub:"今すぐ答えが出なくてもOKです。",key:"beside",
+   c:[{e:"👨‍👩‍👧",m:"家族にそばにいてほしい",d:"配偶者、子ども、親など"},
+      {e:"👫",m:"親しい友人・信頼できる人に",d:"家族でなくても気心の知れた人"},
+      {e:"🤲",m:"医療者・専門家に任せたい",d:"プロのケアのもとで静かに"},
+      {e:"🌙",m:"ひとりで、静かに",d:"誰かに気を使わず自分だけの時間"},
+      {e:"🐾",m:"ペットにもそばにいてほしい",d:"大切な家族である動物とともに"},
+      {e:"📿",m:"信仰の仲間と",d:"精神的なつながりを感じられる人と"}]},
+  {ch:"Chapter 3 · 延命治療について",text:"自分で意思を伝えられなくなったとき\n延命治療について\nどう思いますか？",sub:"心肺蘇生・人工呼吸器・胃ろうなど命を長らえる医療処置です。",key:"lifesustain",
+   c:[{e:"💚",m:"できる限りの治療をしてほしい",d:"回復の可能性があるなら全力で"},
+      {e:"🌸",m:"苦しくない範囲で自然に任せたい",d:"無理な延命より穏やかな最期を"},
+      {e:"📋",m:"状況によって家族に判断してほしい",d:"そのときに委ねたい"},
+      {e:"⏳",m:"一定期間だけ試してほしい",d:"改善がなければ見直してほしい"},
+      {e:"💬",m:"主治医の意見を尊重したい",d:"専門家の判断に従いたい"},
+      {e:"💭",m:"まだ考えたことがなかった",d:"もう少し情報を知ってから"}]},
+  {ch:"Chapter 3 · 延命治療について",text:"「回復の見込みがない」と\n医師に言われたとしたら？",sub:"難しい問いですが、今の気持ちをそのまま選んでください。",key:"terminal",
+   c:[{e:"🌿",m:"穏やかに過ごせる方法を選ぶ",d:"苦しまず自分らしく残りの時間を"},
+      {e:"⚕️",m:"最後まで積極的な治療を",d:"わずかな可能性にかけたい"},
+      {e:"👨‍👩‍👧",m:"家族と一緒に決めたい",d:"大切な人と話し合いたい"},
+      {e:"✍️",m:"事前に文書で決めておきたい",d:"リビングウィルを作りたい"},
+      {e:"🕊",m:"自然の流れに委ねたい",d:"自然なかたちで"},
+      {e:"🤷",m:"今はまだ考えられない",d:"気持ちの整理がついていない"}]},
+  {ch:"Chapter 4 · 家族・大切な人へ",text:"あなたの気持ちや希望を\n誰に知っておいてほしいですか？",sub:"もしものとき、代わりに意思を伝えてくれる人です。",key:"proxy",
+   c:[{e:"💑",m:"配偶者・パートナー",d:"人生をともに歩んできた人"},
+      {e:"👦",m:"子ども・きょうだい",d:"家族の中で頼りにしている人"},
+      {e:"👴",m:"親・親戚",d:"長く人生を知ってくれている人"},
+      {e:"🌟",m:"信頼できる友人・知人",d:"本当に分かり合える人"},
+      {e:"⚕️",m:"主治医・かかりつけ医",d:"健康状態をよく知っている医師"},
+      {e:"📋",m:"まだ決まっていない",d:"これから考えたい"}]},
+  {ch:"Chapter 4 · 家族・大切な人へ",text:"大切な人に、\n自分の気持ちを伝えていますか？",sub:"ACPは「話し合うこと」から始まります。",key:"communication",
+   c:[{e:"✅",m:"ある程度話したことがある",d:"伝えている部分がある"},
+      {e:"🔜",m:"話したいが、きっかけがなかった",d:"機会があれば話したいと思っている"},
+      {e:"😶",m:"難しくて、話せていない",d:"心配させたくない"},
+      {e:"📝",m:"エンディングノートには書いた",d:"口では言えないが書いてある"},
+      {e:"🙅",m:"話すつもりはない",d:"自分の中だけで決めておきたい"},
+      {e:"🆕",m:"今日が初めて考えるきっかけ",d:"このツールで初めてじっくり考えた"}]},
+  {ch:"Chapter 5 · 痛みや苦しさについて",text:"痛みや苦しさに対して、\nどのように対処したいですか？",sub:"緩和ケアとは：痛みや苦しさを和らげる医療・ケアのことです。",key:"pain",
+   c:[{e:"😌",m:"痛みはできるだけ取り除いてほしい",d:"緩和ケアを積極的に"},
+      {e:"🧘",m:"意識がはっきりしていたい",d:"頭が働く状態でいたい"},
+      {e:"🤝",m:"医師や看護師に相談して決めたい",d:"状況を見ながら柔軟に"},
+      {e:"🙏",m:"信仰・祈りで心の平穏を",d:"精神的なケアも大切にしたい"},
+      {e:"🌿",m:"代替療法も取り入れたい",d:"西洋医学以外も考えたい"},
+      {e:"💭",m:"今はまだわからない",d:"もう少し考えてみたい"}]},
+  {ch:"Chapter 5 · 痛みや苦しさについて",text:"意識がなくなっても、\n「その人らしさ」を保つために\n大切にしてほしいことは？",sub:"五感で感じられる、あなたらしさのかけらを。",key:"identity",
+   c:[{e:"🎵",m:"好きな音楽を流してほしい",d:"耳から伝わる親しみのある音楽"},
+      {e:"🌸",m:"好きな香りや花を置いてほしい",d:"心地よい環境"},
+      {e:"📖",m:"好きな言葉・本・写真をそばに",d:"人生を感じさせてくれるもの"},
+      {e:"🤲",m:"大切な人にそばにいてほしい",d:"声や温もりを感じていたい"},
+      {e:"🌅",m:"窓から外の景色が見えるところで",d:"自然の光や風を感じていたい"},
+      {e:"🍚",m:"好きな食べ物のそばに",d:"においや記憶でつながっていたい"}]},
+  {ch:"Chapter 6 · 最後に",text:"このツールを使ってみて、\n今の気持ちはどうですか？",sub:"正直に教えてください。あなたの感想は大切です。",key:"feeling",
+   c:[{e:"💡",m:"考えるきっかけになった",d:"漠然と考えていたことが整理された"},
+      {e:"😌",m:"少し不安が和らいだ",d:"考えることへの怖さが薄れてきた"},
+      {e:"😔",m:"まだ気持ちが整理できない",d:"もう少し時間が必要かもしれない"},
+      {e:"💬",m:"誰かと話したくなった",d:"家族や医療者と話し合うきっかけに"},
+      {e:"📝",m:"もっと書き留めておきたい",d:"エンディングノートにまとめたい"},
+      {e:"🔁",m:"また時間をおいて考えたい",d:"繰り返し考えていきたい"}]},
+  {ch:"Chapter 6 · 最後に",text:"あなたにとって\n「良い最期」とは\nどんなイメージですか？",sub:"最後の質問です。直感で選んでください。",key:"goodend",
+   c:[{e:"🏡",m:"住み慣れた場所で、家族に囲まれて",d:"日常の延長線上に、静かに"},
+      {e:"😌",m:"苦しまず、穏やかに",d:"痛みのない、安らかな時間"},
+      {e:"✨",m:"自分らしく生き切ったと感じられる",d:"後悔のない、納得のある終わり"},
+      {e:"🌅",m:"美しい景色の中で",d:"自然や季節を感じながら"},
+      {e:"🙏",m:"感謝の気持ちを伝えられる",d:"「ありがとう」を言えた"},
+      {e:"💭",m:"まだ考えたくない・わからない",d:"今はその問いに向き合えない"}]},
 ];
 
-const NUTRIENTS = [
-  {
-    name:'ビタミンB12', emoji:'🔴', priority:'high',
-    symptoms:['fatigue','concentrate','mood','heart','tongue'],
-    desc:'神経・血液に不可欠なビタミン。不足すると巨赤芽球性貧血や末梢神経障害を引き起こすことがある。動物性食品にのみ含まれるため菜食の方は特に要注意。',
-    source:'📚 厚生労働省「日本人の食事摂取基準2020」成人推奨量2.4μg/日。菜食主義者の欠乏リスクはMeta-analysis（Pawlak et al., Nutr Rev 2013）で示されている。',
-    foods:['レバー','牡蠣','サバ','卵','チーズ'],
-    affiliate_text:'🛒 ビタミンB12サプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=ビタミンB12+サプリ&tag=yuta0602-22',
-  },
-  {
-    name:'鉄（Iron）', emoji:'⚙️', priority:'high',
-    symptoms:['fatigue','cold','hair','concentrate','heart','mood'],
-    desc:'赤血球のヘモグロビンを構成し全身へ酸素を運ぶ。特に月経のある女性は不足しやすく、鉄欠乏性貧血は最も頻度の高い貧血。',
-    source:'📚 厚生労働省2020：月経あり女性の推定平均必要量8.5mg/日。鉄欠乏性貧血は全貧血の約50〜80%（WHO, 2015 Global Anaemia Estimates）。',
-    foods:['レバー','赤身肉','ほうれん草','豆類','ひじき'],
-    affiliate_text:'🛒 鉄サプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=鉄+サプリ+フェリチン&tag=yuta0602-22',
-  },
-  {
-    name:'マグネシウム', emoji:'🟢', priority:'high',
-    symptoms:['muscle','sleep','concentrate','mood','heart'],
-    desc:'300以上の酵素反応に関与する必須ミネラル。神経・筋肉の正常機能に必須で、睡眠の質や気分にも深く関連する。',
-    source:'📚 Mg補充とこむら返り・不眠改善のRCT（Rondanelli et al., Nutrients 2021）。国民健康・栄養調査でも日本人の摂取量は推奨量を下回ることが多い。',
-    foods:['ナッツ類','大豆','海藻','玄米','バナナ'],
-    affiliate_text:'🛒 マグネシウムサプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=マグネシウム+サプリ&tag=yuta0602-22',
-  },
-  {
-    name:'ビタミンD', emoji:'☀️', priority:'high',
-    symptoms:['bone','immune','mood','fatigue','muscle'],
-    desc:'カルシウム吸収を助け骨を強くする。免疫調整・気分にも関与し、日光に当たる機会が少ない現代人の多くが不足している。',
-    source:'📚 国民健康・栄養調査（2019）：日本人成人の約50%が欠乏水準（25-OH-D＜20ng/mL）。ビタミンDと免疫・うつ症状のメタ解析（Shaffer et al., JAMA 2020）。',
-    foods:['サケ','イワシ','キノコ類','卵黄','日光浴'],
-    affiliate_text:'🛒 ビタミンDサプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=ビタミンD+サプリ&tag=yuta0602-22',
-  },
-  {
-    name:'ビタミンC', emoji:'🍊', priority:'mid',
-    symptoms:['immune','skin','fatigue','mood','tongue'],
-    desc:'強力な抗酸化ビタミン。コラーゲン合成・免疫機能・鉄の吸収促進に関与。水溶性で体内に貯蔵できないため毎日の摂取が重要。',
-    source:'📚 厚生労働省推奨量100mg/日。Cochrane Review（Hemilä, 2013）：風邪の罹患期間短縮効果を確認。コラーゲン合成への関与は生化学的に確立。',
-    foods:['パプリカ','ブロッコリー','キウイ','イチゴ','レモン'],
-    affiliate_text:'🛒 ビタミンCサプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=ビタミンC+サプリ+高濃度&tag=yuta0602-22',
-  },
-  {
-    name:'ビタミンB群（B1・B6）', emoji:'🟡', priority:'mid',
-    symptoms:['fatigue','concentrate','mood','appetite','tongue','skin'],
-    desc:'糖質・タンパク質・脂質の代謝に不可欠。アルコールを飲む機会が多い方・偏食の方・加工食品中心の食生活の方は不足しやすい。',
-    source:'📚 B6不足と抑うつの関連（Mikkelsen et al., Open Nutr J 2016）。B1欠乏は疲労・食欲不振の直接的原因となる（厚生労働省e-ヘルスネット）。',
-    foods:['豚肉','玄米','大豆','バナナ','ナッツ'],
-    affiliate_text:'🛒 ビタミンB群サプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=ビタミンB群+サプリ&tag=yuta0602-22',
-  },
-  {
-    name:'カルシウム', emoji:'🦷', priority:'mid',
-    symptoms:['bone','muscle','sleep','heart'],
-    desc:'骨・歯の主成分であり神経伝達・筋収縮にも必須。日本人は乳製品摂取が少なく慢性的に不足しがち。',
-    source:'📚 国民健康・栄養調査（2019）：成人男性平均503mg（推奨750mgを大幅に下回る）。ビタミンD・Mgと協調して骨代謝に関与（厚生労働省2020）。',
-    foods:['牛乳','チーズ','豆腐','小松菜','桜エビ'],
-    affiliate_text:'🛒 カルシウムサプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=カルシウム+マグネシウム+サプリ&tag=yuta0602-22',
-  },
-  {
-    name:'亜鉛', emoji:'💎', priority:'mid',
-    symptoms:['hair','skin','nail','immune','appetite','mood'],
-    desc:'細胞分裂・免疫・味覚・皮膚の健康維持に関与する微量ミネラル。不足すると脱毛・肌荒れ・味覚障害が起こりやすい。',
-    source:'📚 亜鉛欠乏と脱毛（テロゲン脱毛）の関連（Almohanna et al., Dermatol Ther 2019）。免疫機能への関与（Wessels et al., Nutrients 2017）。',
-    foods:['牡蠣','牛肉','チーズ','カシューナッツ','大豆'],
-    affiliate_text:'🛒 亜鉛サプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=亜鉛+サプリ&tag=yuta0602-22',
-  },
-  {
-    name:'ビタミンA', emoji:'🥕', priority:'mid',
-    symptoms:['eye','skin','immune','fatigue'],
-    desc:'目の健康・皮膚・粘膜の維持に関与。網膜のロドプシン合成に必須で、不足すると夜間視力低下や皮膚乾燥が起こる。',
-    source:'📚 ロドプシン合成へのVitA関与（Sommer, WHO 1995）。推奨量：成人男性850μgRAE/日（厚生労働省2020）。',
-    foods:['レバー','にんじん','ほうれん草','かぼちゃ','卵'],
-    affiliate_text:'🛒 ビタミンAサプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=ビタミンA+ベータカロテン+サプリ&tag=yuta0602-22',
-  },
-  {
-    name:'カリウム', emoji:'🍌', priority:'mid',
-    symptoms:['muscle','swollen','fatigue','heart'],
-    desc:'細胞内の水分調整・筋収縮・血圧調整に関与。塩分の多い食事でナトリウムが増えると相対的に不足し、むくみ・こむら返りが起こりやすくなる。',
-    source:'📚 厚生労働省2020目標量：成人男性3,000mg/日以上。カリウム摂取と血圧低下・むくみ改善（Aburto et al., BMJ 2013 メタ解析）。',
-    foods:['バナナ','アボカド','ほうれん草','じゃがいも','豆類'],
-    affiliate_text:'🛒 カリウムサプリを探す（Amazon）',
-    affiliate_url:'https://www.amazon.co.jp/s?k=カリウム+サプリ&tag=yuta0602-22',
-  },
+const LABELS={value:"大切にしていること",fear:"心配していること",place:"過ごしたい場所",beside:"そばにいてほしい人",lifesustain:"延命治療について",terminal:"回復見込みがない場合",proxy:"気持ちを知っておいてほしい人",communication:"家族・大切な人との対話",pain:"痛み・苦しさへの対処",identity:"自分らしさを保つために",feeling:"ツールを使っての感想",goodend:"良い最期のイメージ"};
+const ICONS={value:"💛",fear:"💭",place:"🏡",beside:"🤝",lifesustain:"⚕️",terminal:"🌿",proxy:"👤",communication:"💬",pain:"😌",identity:"✨",feeling:"💡",goodend:"🌸"};
+
+let cur=0, answers={}, backOpen=false;
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation='none'; el.offsetHeight; el.style.animation='';
+}
+
+function startQuiz(){ cur=0; answers={}; backOpen=false; buildDots(); renderQ(); show('s-q'); }
+
+function buildDots(){
+  document.getElementById('prog-dots').innerHTML=
+    QS.map((_,i)=>`<div class="pdot" id="dot-${i}"></div>`).join('');
+}
+
+function renderQ(){
+  const q=QS[cur];
+  document.getElementById('prog-f').style.width=(cur/QS.length*100)+'%';
+  document.getElementById('prog-ct').textContent=`${cur+1} / ${QS.length}`;
+  document.getElementById('prog-ch').textContent=q.ch.split('·')[0].trim();
+  QS.forEach((_,i)=>{
+    const d=document.getElementById(`dot-${i}`);
+    d.className='pdot';
+    if(answers[QS[i].key]!==undefined) d.classList.add('done');
+    if(i===cur) d.classList.add('cur');
+  });
+  document.getElementById('q-cl').textContent=q.ch;
+  document.getElementById('q-text').textContent=q.text;
+  document.getElementById('q-sub').textContent=q.sub;
+
+  const si=answers[q.key];
+  document.getElementById('choices').innerHTML=q.c.map((c,i)=>`
+    <button class="choice-btn ${si===i?'selected':''}" onclick="pick(${i})">
+      <span class="ce">${c.e}</span>
+      <span class="cm">${c.m}</span>
+      <span class="cd">${c.d}</span>
+    </button>`).join('');
+
+  backOpen=false;
+  document.getElementById('back-list').classList.remove('open');
+  document.getElementById('back-area').style.display=cur>0?'flex':'none';
+}
+
+function pick(idx){
+  const q=QS[cur];
+  answers[q.key]=idx;
+  document.querySelectorAll('.choice-btn').forEach((b,i)=>b.classList.toggle('selected',i===idx));
+  setTimeout(()=>{
+    if(cur<QS.length-1){ cur++; renderQ(); }
+    else showResult();
+  },350);
+}
+
+function backNo(){ backOpen=false; document.getElementById('back-list').classList.remove('open'); }
+function backYes(){
+  if(backOpen){ backNo(); return; }
+  backOpen=true;
+  const answered=QS.slice(0,cur).map((q,i)=>({q,i})).reverse();
+  document.getElementById('back-list').innerHTML=answered.map(({q,i})=>{
+    const a=answers[q.key];
+    const val=a!==undefined?`「${q.c[a].m}」`:'（未回答）';
+    return `<button class="btn-bq" onclick="jumpTo(${i})">Q${i+1}. ${q.text.split('\n')[0]} → ${val}</button>`;
+  }).join('');
+  document.getElementById('back-list').classList.add('open');
+}
+function jumpTo(idx){ cur=idx; backOpen=false; renderQ(); }
+
+/* カテゴリ定義 */
+const CATS = [
+  { icon:'💛', name:'大切にしていること',    keys:['value','fear'] },
+  { icon:'🏡', name:'過ごしたい場所・人',    keys:['place','beside'] },
+  { icon:'⚕️', name:'延命治療について',      keys:['lifesustain','terminal'] },
+  { icon:'💬', name:'家族・大切な人へ',      keys:['proxy','communication'] },
+  { icon:'😌', name:'痛みや苦しさについて',  keys:['pain','identity'] },
+  { icon:'🌸', name:'最後に',               keys:['feeling','goodend'] },
 ];
 
-
-// ============================================================
-// 目的別栄養素マップ
-// ============================================================
-const PURPOSE_MAP = {
-  kafunsho: {
-    label: '花粉症対策',
-    emoji: '🌸',
-    type: 'kafunsho',
-    desc: '免疫を整えてアレルギー反応を和らげるサポートに。薬の代わりにはなりませんが補助として。',
-    nutrients: [
-      {
-        name: 'ビタミンD', emoji: '☀️', priority: 'high',
-        desc: 'Th2細胞の過剰反応を抑え、制御性T細胞（Treg）を増やす。日本人成人の約50%が欠乏水準。',
-        source: '📚 VitD補充でアレルギー性鼻炎症状が有意改善（Fronzek et al., Nutrients 2021 メタ解析）',
-        foods: ['サケ','イワシ','キノコ','卵黄'],
-        affiliate_text: '🛒 ビタミンDサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンD+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: '乳酸菌・プロバイオティクス', emoji: '🦠', priority: 'high',
-        desc: '腸管免疫を介してIgE産生を抑制。特定菌株の花粉症改善RCTが複数存在。',
-        source: '📚 プロバイオティクスと季節性アレルギー鼻炎改善のメタ解析（Güvenç et al., Int Forum Allergy Rhinol 2016）',
-        foods: ['ヨーグルト','キムチ','味噌','納豆'],
-        affiliate_text: '🛒 乳酸菌サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=乳酸菌+プロバイオティクス+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンC', emoji: '🍊', priority: 'mid',
-        desc: '抗酸化・抗ヒスタミン様作用。ヒスタミン分解を助ける可能性がある。',
-        source: '📚 高用量VitCと血中ヒスタミン低下の関連（Johnston et al., J Am Coll Nutr 1992）',
-        foods: ['パプリカ','キウイ','ブロッコリー','イチゴ'],
-        affiliate_text: '🛒 ビタミンCサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンC+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ケルセチン', emoji: '🌰', priority: 'mid',
-        desc: '肥満細胞からのヒスタミン遊離を抑える作用が試験管レベルで確認。',
-        source: '📚 ケルセチンの抗アレルギー作用レビュー（Mlcek et al., Molecules 2016）',
-        foods: ['タマネギ','そば茶','リンゴ','緑茶'],
-        affiliate_text: '🛒 ケルセチンサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ケルセチン+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'シソ葉エキス（ロズマリン酸）', emoji: '🌿', priority: 'mid',
-        desc: '鼻水・目のかゆみへの効果を示す小規模RCTあり。日本国内研究が中心。',
-        source: '📚 ペリラエキスと鼻症状改善のRCT（Takano et al., Exp Biol Med 2004）',
-        foods: ['シソ（大葉）','シソ茶'],
-        affiliate_text: '🛒 シソエキスサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=シソ+ロズマリン酸+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  immune: {
-    label: '免疫アップ',
-    emoji: '🛡️',
-    type: 'immune',
-    desc: '免疫機能を底上げして、風邪をひきにくい体づくりをサポート。',
-    nutrients: [
-      {
-        name: 'ビタミンD', emoji: '☀️', priority: 'high',
-        desc: '自然免疫・獲得免疫の両方に関与。欠乏すると感染症リスクが上がる。',
-        source: '📚 VitD欠乏と感染症リスク増加（Aranow, J Investig Med 2011）',
-        foods: ['サケ','イワシ','キノコ','卵黄'],
-        affiliate_text: '🛒 ビタミンDサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンD+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンC', emoji: '🍊', priority: 'high',
-        desc: '白血球の機能維持・抗酸化作用。ストレス時・運動後に消費が増える。',
-        source: '📚 VitCと免疫機能・感染期間短縮のレビュー（Carr & Maggini, Nutrients 2017）',
-        foods: ['パプリカ','キウイ','ブロッコリー','イチゴ'],
-        affiliate_text: '🛒 ビタミンCサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンC+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: '亜鉛', emoji: '💎', priority: 'high',
-        desc: 'T細胞・NK細胞の機能に必須。欠乏すると感染症への抵抗力が著しく低下。',
-        source: '📚 亜鉛と免疫機能（Wessels et al., Nutrients 2017）',
-        foods: ['牡蠣','牛肉','チーズ','カシューナッツ'],
-        affiliate_text: '🛒 亜鉛サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=亜鉛+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: '乳酸菌・プロバイオティクス', emoji: '🦠', priority: 'mid',
-        desc: '腸管免疫の活性化。腸内細菌叢を整えることで全身の免疫バランスをサポート。',
-        source: '📚 プロバイオティクスと上気道感染症予防のメタ解析（Hao et al., Cochrane 2015）',
-        foods: ['ヨーグルト','キムチ','味噌','納豆'],
-        affiliate_text: '🛒 乳酸菌サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=乳酸菌+プロバイオティクス+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  fatigue: {
-    label: '疲労・元気がない',
-    emoji: '🔋',
-    type: 'fatigue',
-    desc: 'だるさ・集中力低下・眠れない…そんな時に不足しがちな栄養素をチェック。',
-    nutrients: [
-      {
-        name: 'ビタミンB群（B1・B6）', emoji: '⚡', priority: 'high',
-        desc: '糖質・脂質・タンパク質をエネルギーに変える補酵素。不足するとすぐ疲れる・だるい状態が続く。',
-        source: '📚 ビタミンB群と疲労感・エネルギー代謝（Kennedy, Nutrients 2016）',
-        foods: ['豚肉','納豆','玄米','マグロ','バナナ'],
-        affiliate_text: '🛒 ビタミンB群サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンB群+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: '鉄', emoji: '🩸', priority: 'high',
-        desc: '酸素運搬に必須。鉄欠乏性貧血でなくても「隠れ鉄不足」で慢性疲労・集中力低下が起こる。女性に特に多い。',
-        source: '📚 潜在性鉄欠乏と疲労・認知機能低下（Zimmermann & Hurrell, Lancet 2007）',
-        foods: ['レバー','赤身肉','ほうれん草','小松菜','あさり'],
-        affiliate_text: '🛒 鉄サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=鉄+フェリチン+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'マグネシウム', emoji: '🌙', priority: 'high',
-        desc: '300以上の酵素反応に関与。睡眠の質改善・筋肉のこわばり解消にも。',
-        source: '📚 Mgと睡眠の質改善のRCT（Abbasi et al., J Res Med Sci 2012）',
-        foods: ['アーモンド','バナナ','ほうれん草','豆腐','玄米'],
-        affiliate_text: '🛒 マグネシウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=マグネシウム+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'CoQ10', emoji: '⚙️', priority: 'mid',
-        desc: 'ミトコンドリアでのエネルギー産生に必須。加齢とともに体内合成量が低下。',
-        source: '📚 CoQ10補充と疲労感改善（Mizuno et al., Nutrition 2008）',
-        foods: ['牛肉','豚肉','イワシ','ピーナッツ'],
-        affiliate_text: '🛒 CoQ10サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=コエンザイムQ10+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  muscle: {
-    label: '筋トレ・運動',
-    emoji: '💪',
-    type: 'muscle',
-    desc: 'トレーニング効果を高め、回復を早めるために意識したい栄養素。',
-    nutrients: [
-      {
-        name: 'タンパク質（プロテイン）', emoji: '🥩', priority: 'high',
-        desc: '筋肉の原料。運動後30分以内の摂取が特に効果的。体重×1.6〜2.2g/日が目安。',
-        source: '📚 筋肥大のためのタンパク質摂取量のメタ解析（Morton et al., Br J Sports Med 2018）',
-        foods: ['鶏むね肉','卵','魚','大豆製品','乳製品'],
-        affiliate_text: '🛒 プロテインを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=プロテイン+ホエイ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンD', emoji: '☀️', priority: 'high',
-        desc: '筋力・筋肉量の維持に関与。欠乏すると筋力低下・疲労骨折リスクが上がる。',
-        source: '📚 VitDと筋力のメタ解析（Beaudart et al., J Clin Endocrinol Metab 2014）',
-        foods: ['サケ','イワシ','キノコ','卵黄'],
-        affiliate_text: '🛒 ビタミンDサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンD+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'マグネシウム', emoji: '🌙', priority: 'high',
-        desc: '筋収縮・弛緩のコントロール。こむら返り防止・回復促進にも。運動で汗とともに失われやすい。',
-        source: '📚 Mgと運動パフォーマンス・筋痙攣（Zhang et al., Nutrients 2017）',
-        foods: ['アーモンド','バナナ','ほうれん草','豆腐'],
-        affiliate_text: '🛒 マグネシウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=マグネシウム+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'BCAA（分岐鎖アミノ酸）', emoji: '🔬', priority: 'mid',
-        desc: 'バリン・ロイシン・イソロイシンの総称。筋肉の合成促進・筋肉痛軽減に。',
-        source: '📚 BCAA摂取と筋肉痛軽減のメタ解析（Fedewa et al., J Nutr Metab 2019）',
-        foods: ['鶏肉','マグロ','卵','乳製品'],
-        affiliate_text: '🛒 BCAAサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=BCAA+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンC', emoji: '🍊', priority: 'mid',
-        desc: 'コラーゲン合成（関節・腱の保護）・運動後の酸化ストレス軽減に。',
-        source: '📚 VitCと運動後の酸化ストレス軽減（Davison et al., Eur J Nutr 2012）',
-        foods: ['パプリカ','キウイ','ブロッコリー'],
-        affiliate_text: '🛒 ビタミンCサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンC+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  sleep: {
-    label: '睡眠・不眠',
-    emoji: '😴',
-    type: 'sleep',
-    desc: '寝つきが悪い・夜中に目が覚める…睡眠の質を整える栄養素をチェック。',
-    nutrients: [
-      {
-        name: 'マグネシウム', emoji: '🌙', priority: 'high',
-        desc: 'GABA受容体を介してリラックスを促進。睡眠の質と深さを改善するRCTあり。不足すると筋肉の緊張・不眠が起きやすい。',
-        source: '📚 Mgサプリと不眠改善のRCT（Abbasi et al., J Res Med Sci 2012）',
-        foods: ['アーモンド','バナナ','ほうれん草','豆腐','玄米'],
-        affiliate_text: '🛒 マグネシウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=マグネシウム+グリシン酸+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンB6', emoji: '⚡', priority: 'high',
-        desc: 'トリプトファン→セロトニン→メラトニンの合成に必須。夜ぐっすり眠るための土台を作る。',
-        source: '📚 B6とメラトニン合成・睡眠の質（Aspy et al., Percept Mot Skills 2018）',
-        foods: ['マグロ','鶏肉','バナナ','ピスタチオ','にんにく'],
-        affiliate_text: '🛒 ビタミンB6サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンB6+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'グリシン', emoji: '🌊', priority: 'mid',
-        desc: '体温低下を促して入眠を助けるアミノ酸。「寝つきが悪い」「朝すっきり起きられない」方に。',
-        source: '📚 グリシン3gと主観的睡眠・日中眠気の改善（Inagawa et al., Sleep Biol Rhythms 2006）',
-        foods: ['ゼラチン','豚足','エビ','ホタテ'],
-        affiliate_text: '🛒 グリシンサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=グリシン+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'テアニン', emoji: '🍵', priority: 'mid',
-        desc: '緑茶由来のアミノ酸。α波増加・リラックス促進。就寝前の緊張感を和らげる。',
-        source: '📚 テアニンとα波・ストレス軽減（Nobre et al., Asia Pac J Clin Nutr 2008）',
-        foods: ['緑茶','抹茶'],
-        affiliate_text: '🛒 テアニンサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=テアニン+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  brain: {
-    label: '集中力・メンタル',
-    emoji: '🧠',
-    type: 'brain',
-    desc: '仕事・勉強の集中力アップ、気分の安定に関わる栄養素をチェック。',
-    nutrients: [
-      {
-        name: 'ビタミンB群（B1・B6・B12）', emoji: '⚡', priority: 'high',
-        desc: '神経伝達物質の合成・エネルギー代謝に必須。不足すると集中力低下・気分の落ち込みが起きやすい。',
-        source: '📚 B群と認知機能・精神的健康のレビュー（Kennedy, Nutrients 2016）',
-        foods: ['豚肉','納豆','マグロ','卵','レバー'],
-        affiliate_text: '🛒 ビタミンB群サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンB群+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'オメガ3（DHA・EPA）', emoji: '🐟', priority: 'high',
-        desc: '脳の神経膜の主成分。DHAは認知機能・記憶力との関連が強い。うつ症状軽減のメタ解析も多数。',
-        source: '📚 オメガ3と認知機能・うつ症状のメタ解析（Grosso et al., Eur Neuropsychopharmacol 2014）',
-        foods: ['サバ','イワシ','サーモン','くるみ'],
-        affiliate_text: '🛒 DHA・EPAサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=DHA+EPA+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'マグネシウム', emoji: '🌙', priority: 'high',
-        desc: 'ストレスで消費が増える。不足すると不安感・イライラ・集中力低下が起きやすい。',
-        source: '📚 Mg欠乏とストレス・不安の関連（Boyle et al., Nutrients 2017）',
-        foods: ['アーモンド','バナナ','ほうれん草','ダークチョコ'],
-        affiliate_text: '🛒 マグネシウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=マグネシウム+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンD', emoji: '☀️', priority: 'mid',
-        desc: '脳内セロトニン産生に関与。欠乏と抑うつ気分・季節性うつとの関連が示されている。',
-        source: '📚 VitD欠乏とうつ症状のメタ解析（Shaffer et al., Psychosom Med 2014）',
-        foods: ['サケ','イワシ','キノコ','卵黄'],
-        affiliate_text: '🛒 ビタミンDサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンD+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  beauty: {
-    label: '肌・美容',
-    emoji: '💆',
-    type: 'beauty',
-    desc: '肌のハリ・ツヤ・乾燥対策に関わる栄養素。内側からのスキンケアをサポート。',
-    nutrients: [
-      {
-        name: 'ビタミンC', emoji: '🍊', priority: 'high',
-        desc: 'コラーゲン合成に必須。メラニン生成を抑制し、シミ予防・美白効果のエビデンスが豊富。',
-        source: '📚 VitCとコラーゲン合成・皮膚老化防止（Pullar et al., Nutrients 2017）',
-        foods: ['パプリカ','キウイ','ブロッコリー','イチゴ','アセロラ'],
-        affiliate_text: '🛒 ビタミンCサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンC+美白+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンA（βカロテン）', emoji: '🥕', priority: 'high',
-        desc: '皮膚細胞のターンオーバー促進・粘膜維持。乾燥肌・角化症状の改善に。過剰摂取に注意（βカロテンは安全）。',
-        source: '📚 VitAと皮膚バリア機能・ターンオーバー（Sorg et al., J Clin Med 2023）',
-        foods: ['にんじん','かぼちゃ','ほうれん草','レバー','卵'],
-        affiliate_text: '🛒 ビタミンAサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ベータカロテン+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: '亜鉛', emoji: '💎', priority: 'high',
-        desc: '皮膚の修復・コラーゲン合成・皮脂コントロールに関与。ニキビ・肌荒れの原因になりやすい。',
-        source: '📚 亜鉛と皮膚の健康・ニキビ改善（Gupta et al., Dermatol Ther 2014）',
-        foods: ['牡蠣','牛肉','チーズ','カシューナッツ','卵'],
-        affiliate_text: '🛒 亜鉛サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=亜鉛+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'コラーゲン', emoji: '✨', priority: 'mid',
-        desc: '皮膚のハリ・弾力に関与。ペプチド型で摂取すると吸収されやすい。VitCと一緒に摂ると◎',
-        source: '📚 コラーゲンペプチドと皮膚弾力・保湿改善のRCT（Proksch et al., Skin Pharmacol Physiol 2014）',
-        foods: ['鶏皮','豚足','ゼラチン','魚の皮'],
-        affiliate_text: '🛒 コラーゲンサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=コラーゲン+ペプチド+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  maternity: {
-    label: '妊活・妊娠中',
-    emoji: '🤰',
-    type: 'maternity',
-    desc: '赤ちゃんの健康と妊娠中のママの体を守る最重要栄養素。妊活中から意識を。',
-    nutrients: [
-      {
-        name: '葉酸', emoji: '🟢', priority: 'high',
-        desc: '神経管閉鎖障害の予防に必須。妊娠1ヶ月前から妊娠3ヶ月まで400μg/日の補充が厚労省で推奨されている。',
-        source: '📚 葉酸と神経管閉鎖障害予防（厚生労働省通知・WHO推奨）',
-        foods: ['ほうれん草','枝豆','ブロッコリー','レバー','納豆'],
-        affiliate_text: '🛒 葉酸サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=葉酸+妊婦+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: '鉄', emoji: '🩸', priority: 'high',
-        desc: '妊娠中は血液量が増え鉄需要が急増。鉄欠乏性貧血は早産・低体重児のリスクと関連。',
-        source: '📚 妊娠中の鉄補充と妊娠転帰改善のメタ解析（Pena-Rosas et al., Cochrane 2015）',
-        foods: ['レバー','あさり','赤身肉','ほうれん草','小松菜'],
-        affiliate_text: '🛒 鉄サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=鉄+妊婦+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンD', emoji: '☀️', priority: 'high',
-        desc: '胎児の骨・免疫発達に関与。妊娠中の欠乏は妊娠高血圧・低体重児のリスクと関連。',
-        source: '📚 妊娠中のVitD補充と妊娠転帰（Roth et al., N Engl J Med 2018）',
-        foods: ['サケ','イワシ','キノコ','卵黄'],
-        affiliate_text: '🛒 ビタミンDサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンD+妊婦+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'カルシウム', emoji: '🦷', priority: 'mid',
-        desc: '胎児の骨形成に必須。不足すると母体の骨からカルシウムが奪われる。VitD・Mgとセットで。',
-        source: '📚 妊娠中のカルシウム摂取推奨量（厚生労働省DRI 2020）',
-        foods: ['牛乳','チーズ','豆腐','小松菜','桜エビ'],
-        affiliate_text: '🛒 カルシウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=カルシウム+マグネシウム+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'オメガ3（DHA）', emoji: '🐟', priority: 'mid',
-        desc: '胎児の脳・神経発達に重要。妊娠後期〜授乳期に特に需要が高まる。',
-        source: '📚 妊娠中のDHA摂取と胎児脳発達（Koletzko et al., Ann Nutr Metab 2008）',
-        foods: ['サバ','イワシ','サーモン'],
-        affiliate_text: '🛒 DHA・EPAサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=DHA+EPA+妊婦+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  bone: {
-    label: '骨・関節',
-    emoji: '🦴',
-    type: 'bone',
-    desc: '骨密度の維持・関節の健康に関わる栄養素。骨粗しょう症予防は若い頃からが大切。',
-    nutrients: [
-      {
-        name: 'カルシウム', emoji: '🦷', priority: 'high',
-        desc: '骨の主成分。日本人は慢性的に不足しており、成人の平均摂取量は推奨量を大幅に下回る。',
-        source: '📚 国民健康・栄養調査（2019）：成人男性平均503mg（推奨750mgを下回る）',
-        foods: ['牛乳','チーズ','豆腐','小松菜','桜エビ'],
-        affiliate_text: '🛒 カルシウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=カルシウム+マグネシウム+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンD', emoji: '☀️', priority: 'high',
-        desc: 'カルシウムの腸管吸収を2〜4倍に高める。不足するとカルシウムを摂っても骨に届かない。',
-        source: '📚 VitDとカルシウム吸収・骨密度改善のメタ解析（Bischoff-Ferrari et al., JAMA 2005）',
-        foods: ['サケ','イワシ','キノコ','卵黄'],
-        affiliate_text: '🛒 ビタミンDサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンD+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンK2', emoji: '🟩', priority: 'high',
-        desc: 'カルシウムを骨に定着させるオステオカルシンを活性化。骨粗しょう症治療薬（メナテトレノン）の主成分。',
-        source: '📚 VitK2と骨密度・骨折リスク低減（Cockayne et al., Arch Intern Med 2006 メタ解析）',
-        foods: ['納豆','チーズ','発酵食品'],
-        affiliate_text: '🛒 ビタミンK2サプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンK2+MK7+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'グルコサミン・コンドロイチン', emoji: '🦿', priority: 'mid',
-        desc: '軟骨の構成成分。膝・腰の関節痛に対する小規模RCTあり。効果は個人差が大きい。',
-        source: '📚 グルコサミンと変形性膝関節症のコクランレビュー（Towheed et al., Cochrane 2005）',
-        foods: ['カニ','エビ（殻付き）'],
-        affiliate_text: '🛒 グルコサミンサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=グルコサミン+コンドロイチン+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-  lifestyle: {
-    label: '生活習慣病予防',
-    emoji: '🩺',
-    type: 'lifestyle',
-    desc: '血圧・血糖・コレステロールが気になる方へ。食事・生活改善と併せて意識したい栄養素。',
-    nutrients: [
-      {
-        name: 'カリウム', emoji: '🍌', priority: 'high',
-        desc: 'ナトリウム排泄を促し血圧を下げる。日本人は塩分過多でカリウム不足になりがち。',
-        source: '📚 カリウム摂取増加と血圧低下・脳卒中リスク減少のメタ解析（Aburto et al., BMJ 2013）',
-        foods: ['バナナ','アボカド','ほうれん草','じゃがいも','豆類'],
-        affiliate_text: '🛒 カリウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=カリウム+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'マグネシウム', emoji: '🌙', priority: 'high',
-        desc: 'インスリン感受性の改善・血圧低下・不整脈予防に関与。糖尿病リスク低減のメタ解析あり。',
-        source: '📚 Mg摂取量と2型糖尿病リスクのメタ解析（Schulze et al., Diabetes Care 2007）',
-        foods: ['アーモンド','バナナ','ほうれん草','豆腐','玄米'],
-        affiliate_text: '🛒 マグネシウムサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=マグネシウム+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'オメガ3（EPA・DHA）', emoji: '🐟', priority: 'high',
-        desc: '中性脂肪低下・動脈硬化予防・抗炎症作用。心血管疾患リスク低減のエビデンスが豊富。',
-        source: '📚 EPA/DHAと中性脂肪低下・心血管疾患リスク低減のメタ解析（Miller et al., J Clin Lipidol 2014）',
-        foods: ['サバ','イワシ','サーモン','くるみ'],
-        affiliate_text: '🛒 DHA・EPAサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=DHA+EPA+サプリ&tag=yuta0602-22',
-      },
-      {
-        name: 'ビタミンD', emoji: '☀️', priority: 'mid',
-        desc: 'インスリン分泌・感受性に関与。欠乏と2型糖尿病リスク増加の関連が示されている。',
-        source: '📚 VitD欠乏と2型糖尿病リスクのメタ解析（Mitri et al., Eur J Clin Nutr 2011）',
-        foods: ['サケ','イワシ','キノコ','卵黄'],
-        affiliate_text: '🛒 ビタミンDサプリを探す（Amazon）',
-        affiliate_url: 'https://www.amazon.co.jp/s?k=ビタミンD+サプリ&tag=yuta0602-22',
-      },
-    ]
-  },
-};
-
-function selectPurpose(key) {
-  // ボタンのアクティブ状態
-  document.querySelectorAll('.purpose-btn').forEach(b => b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-
-  const data = PURPOSE_MAP[key];
-  document.getElementById('symptom-section').style.display = 'none';
-  const rs = document.getElementById('result-section');
-  rs.classList.add('show');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  document.getElementById('result-summary').textContent = `${data.nutrients.length}種類の栄養素`;
-
-  const list = document.getElementById('result-list');
-  list.innerHTML = '';
-
-  // 目的ヘッダーカード
-  const header = document.createElement('div');
-  header.className = `purpose-header-card ${data.type}`;
-  header.innerHTML = `
-    <div class="purpose-header-icon">${data.emoji}</div>
-    <div>
-      <div class="purpose-header-title">${data.label}におすすめの栄養素</div>
-      <div class="purpose-header-sub">${data.desc}</div>
-    </div>
-  `;
-  list.appendChild(header);
-
-  data.nutrients.forEach((n, i) => {
-    const card = document.createElement('div');
-    card.className = `nutrient-card priority-${n.priority}`;
-    card.style.animationDelay = `${i * 0.08}s`;
-    card.innerHTML = `
-      <div class="result-level">
-        <span class="level-badge">${n.priority === 'high' ? '⚠️ 要注目' : '📌 確認推奨'}</span>
-        <span class="result-combo">${n.emoji} ${n.name}</span>
+function buildCatHTML(prefix){
+  /* prefix = 'rc' → .rc-cat/.rc-row  |  prefix = 'ss' → .ss-cat/.ss-row */
+  return CATS.map(cat => {
+    const rows = cat.keys.map(key => {
+      const q = QS.find(q=>q.key===key);
+      const a = answers[key];
+      const answered = a !== undefined;
+      return `<div class="${prefix}-row">
+        <span class="${prefix}-label">${LABELS[key]}</span>
+        <span class="${prefix}-val${answered?'':' skip'}">${answered ? q.c[a].m : '（スキップ）'}</span>
+      </div>`;
+    }).join('');
+    return `<div class="${prefix}-cat">
+      <div class="${prefix}-cat-head">
+        <span class="${prefix}-cat-icon">${cat.icon}</span>
+        <span class="${prefix}-cat-name">${cat.name}</span>
       </div>
-      <div class="result-desc">${n.desc}</div>
-      <div class="result-source">${n.source}</div>
-      <div style="font-size:12px;color:var(--gray);margin-bottom:6px;font-weight:600;">多く含む食品</div>
-      <div class="food-sources">${n.foods.map(f => `<span class="food-tag">${f}</span>`).join('')}</div>
-      <a href="${n.affiliate_url}" target="_blank" class="affiliate-btn">${n.affiliate_text}</a>
-    `;
-    list.appendChild(card);
-  });
+      <div class="${prefix}-cat-rows">${rows}</div>
+    </div>`;
+  }).join('');
 }
 
-let selected = new Set();
-
-function init() {
-  const grid = document.getElementById('symptom-grid');
-  SYMPTOMS.forEach(s => {
-    const div = document.createElement('div');
-    div.className = 'symptom-item';
-    div.innerHTML = `<div class="check-circle"></div><span>${s.emoji} ${s.label}</span>`;
-    div.onclick = () => toggle(s.id, div);
-    grid.appendChild(div);
-  });
+function showResult(){
+  const now=new Date();
+  const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  document.getElementById('rc-date').textContent = dateStr;
+  document.getElementById('rc-cats').innerHTML = buildCatHTML('rc');
+  show('s-result');
 }
 
-function toggle(id, el) {
-  selected.has(id) ? selected.delete(id) : selected.add(id);
-  el.classList.toggle('checked');
-  el.querySelector('.check-circle').textContent = selected.has(id) ? '✓' : '';
-  const n = selected.size;
-  document.getElementById('check-btn').disabled = n === 0;
-  document.getElementById('selected-count').textContent = n > 0 ? `${n}個選択中` : '';
-}
+/* 画像として保存・シェア（html2canvas） */
+function saveImage(){
+  const btn = document.getElementById('btn-img');
+  btn.textContent = '⏳ 画像を生成中...';
+  btn.disabled = true;
 
-function showResult() {
-  const scored = NUTRIENTS
-    .map(n => ({ ...n, match: n.symptoms.filter(s => selected.has(s)).length }))
-    .filter(n => n.match > 0)
-    .sort((a, b) => b.match - a.match || (a.priority === 'high' ? -1 : 1));
-
-  document.getElementById('symptom-section').style.display = 'none';
-  document.getElementById('result-section').classList.add('show');
-  document.getElementById('result-summary').textContent = `${selected.size}個の症状 → ${scored.length}種類該当`;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  const list = document.getElementById('result-list');
-  list.innerHTML = '';
-
-  if (!scored.length) {
-    list.innerHTML = `<div class="no-hit-card"><div class="no-hit-icon">✨</div><div class="no-hit-title">特に不足が疑われる栄養素はありませんでした</div><div class="no-hit-desc">バランスの良い食事を心がけて、引き続き健康を維持しましょう！</div></div>`;
-    return;
+  function loadH2C(cb){
+    if(typeof html2canvas !== 'undefined'){ cb(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = cb;
+    s.onerror = () => {
+      btn.textContent = '🖼️ 画像として保存・シェア';
+      btn.disabled = false;
+      alert('ライブラリ読込失敗。\nネット接続を確認してください。');
+    };
+    document.head.appendChild(s);
   }
 
-  scored.slice(0, 5).forEach((n, i) => {
-    const matchedLabels = n.symptoms.filter(s => selected.has(s))
-      .map(s => SYMPTOMS.find(x => x.id === s)?.label || s);
-    const card = document.createElement('div');
-    card.className = `nutrient-card priority-${n.priority}`;
-    card.style.animationDelay = `${i * 0.08}s`;
-    card.innerHTML = `
-      <div class="result-level">
-        <span class="level-badge">${n.priority === 'high' ? '⚠️ 要注目' : '📌 確認推奨'}</span>
-        <span class="result-combo">${n.emoji} ${n.name}</span>
-      </div>
-      <div class="symptom-tags">${matchedLabels.map(l => `<span class="symptom-tag">✓ ${l}</span>`).join('')}</div>
-      <div class="result-desc">${n.desc}</div>
-      <div class="result-source">${n.source}</div>
-      <div style="font-size:12px;color:var(--gray);margin-bottom:6px;font-weight:600;">多く含む食品</div>
-      <div class="food-sources">${n.foods.map(f => `<span class="food-tag">${f}</span>`).join('')}</div>
-      <a href="${n.affiliate_url}" target="_blank" class="affiliate-btn">${n.affiliate_text}</a>
-    `;
-    list.appendChild(card);
+  loadH2C(() => {
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+    const fname = `omoi_${dateStr}.png`;
+    const dateDisp = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+
+    // ① オーバーレイにデータを流し込む
+    document.getElementById('ss-date').textContent = dateDisp;
+    document.getElementById('ss-cats').innerHTML = buildCatHTML('ss');
+
+    // ② オーバーレイを表示（見える状態でキャプチャするのが確実）
+    const ov = document.getElementById('screenshot-overlay');
+    const card = document.getElementById('ss-card-el');
+    ov.classList.add('open');
+    ov.scrollTop = 0;
+
+    // ③ 描画完了を待ってからカード全体をキャプチャ
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const cardH = card.scrollHeight;
+        html2canvas(card, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          scrollX: 0,
+          scrollY: 0,
+          x: 0,
+          y: 0,
+          width: card.offsetWidth,
+          height: cardH,
+          windowWidth: card.offsetWidth,
+          windowHeight: cardH,
+        }).then(canvas => {
+          // キャプチャ完了後にオーバーレイを閉じる
+          ov.classList.remove('open');
+
+          const imgData = canvas.toDataURL('image/png');
+
+          // Web Share API（iOS Safari・シェアシート）
+          if(navigator.share){
+            canvas.toBlob(blob => {
+              if(!blob){
+                fallbackDownload(imgData, fname);
+                btn.textContent = '🖼️ 画像として保存・シェア';
+                btn.disabled = false;
+                return;
+              }
+              const file = new File([blob], fname, { type:'image/png' });
+              const shareData = {
+                title: '思いの綴 ― もしものとき、わたしのこと。',
+                text: `ACP まとめシート（${dateDisp}）`,
+                files: [file]
+              };
+              const canShare = navigator.canShare ? navigator.canShare(shareData) : true;
+              if(canShare){
+                navigator.share(shareData)
+                  .catch(e => { if(e.name !== 'AbortError') fallbackDownload(imgData, fname); })
+                  .finally(() => {
+                    btn.textContent = '🖼️ 画像として保存・シェア';
+                    btn.disabled = false;
+                  });
+              } else {
+                fallbackDownload(imgData, fname);
+                btn.textContent = '🖼️ 画像として保存・シェア';
+                btn.disabled = false;
+              }
+            }, 'image/png');
+          } else {
+            // Android/PC：直接ダウンロード
+            fallbackDownload(imgData, fname);
+            btn.textContent = '🖼️ 画像として保存・シェア';
+            btn.disabled = false;
+          }
+        }).catch(e => {
+          ov.classList.remove('open');
+          console.error(e);
+          btn.textContent = '🖼️ 画像として保存・シェア';
+          btn.disabled = false;
+          alert('画像の生成に失敗しました。\nもう一度お試しください。');
+        });
+      });
+    });
   });
 }
 
-function resetAll() {
-  selected.clear();
-  document.querySelectorAll('.symptom-item').forEach(el => {
-    el.classList.remove('checked');
-    el.querySelector('.check-circle').textContent = '';
-  });
-  document.getElementById('check-btn').disabled = true;
-  document.getElementById('selected-count').textContent = '';
-  document.getElementById('symptom-section').style.display = 'block';
-  document.getElementById('result-section').classList.remove('show');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function fallbackDownload(dataUrl, fname){
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = fname;
+  a.click();
 }
 
-init();
+function copyText(){
+  const now=new Date();
+  let t=`【思いの綴 ― もしものとき、わたしのこと。】\n作成日：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日\n\n`;
+  QS.forEach(q=>{
+    const a=answers[q.key];
+    t+=`◆ ${LABELS[q.key]}\n　${a!==undefined?q.c[a].e+' '+q.c[a].m:'（スキップ）'}\n\n`;
+  });
+  t+=`---\nこのカードは意思決定の強制ではありません。\n家族や医療者と話し合うきっかけにしてください。\n作成：くすりのたま`;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t).then(()=>alert('コピーしました！\nメモやLINEに貼り付けられます。'));
+  } else {
+    const ta=document.createElement('textarea'); ta.value=t;
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    alert('コピーしました！');
+  }
+}
+
+function openScreenshot(){
+  const now = new Date();
+  document.getElementById('ss-date').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  document.getElementById('ss-cats').innerHTML = buildCatHTML('ss');
+  const ov = document.getElementById('screenshot-overlay');
+  ov.classList.add('open');
+  ov.scrollTop = 0;
+}
+
+function closeScreenshot(){
+  document.getElementById('screenshot-overlay').classList.remove('open');
+}
+
+/* 起動オーバーレイ：3秒で自動消去 */
+function dismissLaunch(){
+  const el = document.getElementById('launch-msg');
+  if(el){ el.classList.add('hidden'); setTimeout(()=>el.remove(), 700); }
+}
+
+(function(){
+  setTimeout(()=> dismissLaunch(), 3000);
+})();
+
+function restartQuiz(){
+  if(confirm('最初からやり直しますか？（入力内容はリセットされます）')) startQuiz();
+}
 </script>
 </body>
 </html>
