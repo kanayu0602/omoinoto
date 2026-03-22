@@ -3,7 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>思いの綴 ― もしものとき、わたしのこと。</title>
+<title>思いの綴－おもいのと－｜もしものとき、わたしのこと。</title>
+<meta name="description" content="12の問いに答えるだけで、もしものときの気持ちをカードに整理できるACPサポートアプリ。薬剤師・くすりのたま制作。">
+<meta property="og:title" content="思いの綴－おもいのと－｜もしものとき、わたしのこと。">
+<meta property="og:description" content="12の問いに答えるだけで、もしものときの気持ちをカードに整理。家族や医療者と共有できるACPサポートアプリ。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kanayu0602.github.io/omoinoto/">
+<meta property="og:image" content="https://kanayu0602.github.io/omoinoto/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kanayu0602.github.io/omoinoto/og-image.png">
+<meta name="twitter:title" content="思いの綴－おもいのと－｜もしものとき、わたしのこと。">
+<meta name="twitter:description" content="12の問いに答えるだけで、もしものときの気持ちをカードに整理。家族や医療者と共有できるACPサポートアプリ。">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Zen+Kaku+Gothic+New:wght@400;700&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════
@@ -243,7 +253,7 @@ html, body {
   gap:1vh 1.2vw;
   overflow-y:auto;
   overflow-x:hidden;
-  align-content:start;
+  align-content:stretch;
 }
 
 .choice-btn {
@@ -255,7 +265,7 @@ html, body {
   transition:all .22s;
   box-shadow:var(--shadow);
   display:flex; flex-direction:column; justify-content:flex-start;
-  overflow:hidden;
+  overflow:visible;
   min-height:0;
 }
 .choice-btn:hover {
@@ -274,21 +284,13 @@ html, body {
 .ce { font-size:clamp(1.1rem,2.2vh,1.7rem); display:block; margin-bottom:.4vh; }
 .cm {
   font-family:'Noto Serif JP',serif;
-  font-size:clamp(.75rem,1.4vh,1rem);
+  font-size:clamp(.7rem,1.2vh,.9rem);
   font-weight:700; color:var(--deep);
   display:block; margin-bottom:.2vh; line-height:1.3;
-  overflow:hidden;
-  display:-webkit-box;
-  -webkit-line-clamp:3;
-  -webkit-box-orient:vertical;
 }
 .cd {
-  font-size:clamp(.6rem,1vh,.78rem);
-  color:var(--dim); display:block; line-height:1.4;
-  overflow:hidden;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
+  font-size:clamp(.56rem,.9vh,.72rem);
+  color:var(--dim); display:block; line-height:1.35;
 }
 
 /* 戻るエリア */
