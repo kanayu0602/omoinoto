@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>思いの綴－おもいのと－｜もしものとき、わたしのこと。</title>
+<meta name="description" content="12の問いに答えるだけで、もしものときの気持ちをカードに整理できるACPサポートアプリ。薬剤師・くすりのたま制作。">
+<meta property="og:title" content="思いの綴－おもいのと－｜もしものとき、わたしのこと。">
+<meta property="og:description" content="12の問いに答えるだけで、もしものときの気持ちをカードに整理。家族や医療者と共有できるACPサポートアプリ。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kanayu0602.github.io/omoinoto/">
+<meta property="og:image" content="https://kanayu0602.github.io/omoinoto/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kanayu0602.github.io/omoinoto/og-image.png">
+<meta name="twitter:title" content="思いの綴－おもいのと－｜もしものとき、わたしのこと。">
+<meta name="twitter:description" content="12の問いに答えるだけで、もしものときの気持ちをカードに整理。家族や医療者と共有できるACPサポートアプリ。">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Zen+Kaku+Gothic+New:wght@400;700&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   横向き固定レイアウト
+   - 縦持ちの場合は「横にしてください」案内
+   - 全要素を100vhに収める（スクロールなし）
+══════════════════════════════════════ */
+:root {
+  --bg:      #fdf6f0;
+  --bg2:     #f9ede4;
+  --pink:    #f0e0d8;
+  --accent:  #c47a5a;
+  --accent2: #9b7c6e;
+  --deep:    #2a1f1a;
+  --mid:     #5c4038;
+  --dim:     rgba(42,31,26,0.5);
+  --faint:   rgba(42,31,26,0.25);
+  --card:    #ffffff;
+  --card-hover: #fff8f5;
+  --card-sel:   #fdeee7;
+  --border:  rgba(196,122,90,0.22);
+  --border-sel: #c47a5a;
+  --shadow:  0 2px 16px rgba(196,122,90,0.12);
+  --shadow-sel: 0 0 0 3px rgba(196,122,90,0.3), 0 4px 20px rgba(196,122,90,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  width:100%; height:100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--deep);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* ── 縦持ち警告 ── */
+/* ── 起動時オーバーレイ（数秒表示） ── */
+#launch-msg {
+  display:flex;
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:1.5rem; text-align:center; padding:2rem;
+  transition: opacity .6s ease;
+}
+#launch-msg.hidden { opacity:0; pointer-events:none; }
+.launch-icon { font-size:3.5rem; animation: launchRotate 1.5s ease-in-out forwards; }
+@keyframes launchRotate {
+  0%  { transform:rotate(0deg); }
+  100%{ transform:rotate(90deg); }
+}
+#launch-msg p { font-size:1.3rem; color:var(--mid); line-height:1.9; font-family:'Noto Serif JP',serif; font-weight:400; }
+#launch-msg .skip-btn {
+  margin-top:.5rem;
+  background:none; border:none;
+  color:var(--faint); font-size:.9rem;
+  text-decoration:underline; cursor:pointer;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+}
+
+/* ── 縦持ちでも強制横表示 ── */
+/* スマホ・タブレット縦持ちのみ回転（PCは除外） */
+@media (orientation:portrait) and (max-width:1024px) {
+  #app {
+    width: 100vh !important;
+    height: 100vw !important;
+    transform-origin: top left;
+    transform: rotate(90deg) translateY(-100%);
+    overflow:hidden;
+  }
+}
+
+/* ── メインアプリ（横向き専用） ── */
+#app {
+  width:100vw; height:100vh;
+  display:flex; flex-direction:column;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════
+   SCREEN
+══════════════════════════════ */
+.screen { display:none; width:100%; height:100%; flex-direction:column; animation: si .4s ease forwards; }
+.screen.active { display:flex; }
+@keyframes si { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+
+/* ══════════════════════════════
+   INTRO
+══════════════════════════════ */
+#s-intro {
+  flex-direction:row;
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+}
+.intro-left {
+  width:42%; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center; padding:2vh 3vw;
+  border-right:1px solid var(--border);
+  overflow:hidden;
+}
+.intro-right {
+  flex:1; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  padding:2vh 3vw; gap:1.5vh;
+  overflow:hidden;
+}
+
+.eyebrow {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.75rem,1.2vw,.95rem);
+  letter-spacing:.35em; color:var(--accent); margin-bottom:1.5vh;
+}
+/* メインタイトル：思いの綴 */
+.intro-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1.1rem,2.8vw,2.2rem);
+  font-weight:400; line-height:1.35; margin-bottom:.5vh;
+  white-space:nowrap;
+}
+.title-yomi {
+  font-size:.42em;
+  font-weight:300;
+  color:var(--accent2);
+  letter-spacing:.05em;
+  vertical-align:middle;
+}
+.intro-title ruby { display:inline-flex; flex-direction:column-reverse; align-items:center; }
+.intro-title rt {
+  font-size:.32em; letter-spacing:.12em;
+  color:var(--accent2); font-family:'Zen Kaku Gothic New',sans-serif;
+  font-weight:400; line-height:1;
+}
+/* サブタイトル */
+.intro-subline {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.68rem,1.1vw,.88rem);
+  font-weight:300; color:var(--faint);
+  letter-spacing:.06em; margin-bottom:1vh;
+}
+.intro-title em { font-style:normal; color:var(--accent); }
+.intro-desc {
+  font-size:clamp(.72rem,1.1vw,.9rem);
+  color:var(--mid); line-height:1.8; margin-bottom:1vh;
+}
+.intro-tags { display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.8vh; }
+.tag {
+  font-size:clamp(.62rem,.9vw,.78rem);
+  padding:3px 10px; border-radius:30px;
+  border:1px solid var(--border); color:var(--dim);
+}
+.intro-note { font-size:clamp(.6rem,.85vw,.75rem); color:var(--faint); line-height:1.7; }
+
+.btn-start {
+  background:linear-gradient(135deg,var(--accent),#e0a080);
+  color:#fff; border:none; border-radius:60px;
+  padding:clamp(.7rem,1.5vh,1rem) clamp(2rem,4vw,3rem);
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.9rem,1.8vw,1.2rem);
+  font-weight:700; cursor:pointer; transition:all .3s;
+  box-shadow:0 6px 24px rgba(196,122,90,.3);
+  letter-spacing:.05em; width:100%; max-width:280px;
+}
+.btn-start:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(196,122,90,.45); }
+
+/* ══════════════════════════════
+   QUESTION SCREEN
+══════════════════════════════ */
+#s-q {
+  flex-direction:column;
+  background: var(--bg);
+}
+
+/* トップバー */
+.q-topbar {
+  flex-shrink:0;
+  height: 7vh; min-height:44px;
+  display:flex; align-items:center;
+  padding:0 3vw; gap:1.5vw;
+  border-bottom:1px solid var(--border);
+  background: var(--bg2);
+}
+.prog-chapter { font-size:clamp(.72rem,1.1vw,.9rem); color:var(--accent); letter-spacing:.1em; font-weight:700; }
+.prog-bar-wrap { flex:1; height:6px; background:var(--pink); border-radius:6px; overflow:hidden; }
+.prog-fill { height:100%; background:linear-gradient(90deg,var(--accent),#e0a080); transition:width .5s ease; }
+.prog-count { font-size:clamp(.72rem,1.1vw,.9rem); color:var(--dim); white-space:nowrap; }
+.prog-dots { display:flex; gap:5px; }
+.pdot { width:8px; height:8px; border-radius:50%; background:var(--faint); transition:all .3s; flex-shrink:0; }
+.pdot.done { background:rgba(196,122,90,.5); }
+.pdot.cur  { background:var(--accent); transform:scale(1.4); }
+
+/* メイン2カラム */
+.q-body {
+  flex:1; display:flex; overflow:hidden;
+}
+
+/* 左：問い */
+.q-left {
+  width:35%; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center;
+  padding:3vh 3vw;
+  border-right:1px solid var(--border);
+  background: var(--bg2);
+}
+.q-chapter-label {
+  font-size:clamp(.7rem,1vw,.88rem);
+  color:var(--accent2); letter-spacing:.12em; margin-bottom:1.2vh;
+}
+.q-text {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1rem,2.2vw,1.6rem);
+  font-weight:400; line-height:1.6;
+  margin-bottom:1.5vh; white-space:pre-wrap;
+  color:var(--deep);
+}
+.q-sub {
+  font-size:clamp(.75rem,1.1vw,.95rem);
+  color:var(--dim); line-height:1.9;
+}
+
+/* 右：選択肢 + 戻る */
+.q-right {
+  flex:1; height:100%;
+  display:flex; flex-direction:column;
+  padding:2vh 2.5vw; gap:1.5vh;
+  overflow:hidden;
+}
+
+/* 選択肢グリッド */
+.choices {
+  flex:1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1vh 1.2vw;
+  overflow-y:auto;
+  overflow-x:hidden;
+  align-content:start;
+}
+
+.choice-btn {
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:16px;
+  padding:1.2vh 1.4vw;
+  cursor:pointer; text-align:left;
+  transition:all .22s;
+  box-shadow:var(--shadow);
+  display:flex; flex-direction:column; justify-content:flex-start;
+  overflow:hidden;
+  min-height:0;
+}
+.choice-btn:hover {
+  background:var(--card-hover);
+  border-color:rgba(196,122,90,.45);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(196,122,90,.2);
+}
+.choice-btn.selected {
+  background:var(--card-sel);
+  border-color:var(--border-sel);
+  box-shadow:var(--shadow-sel);
+  transform:scale(1.02);
+}
+
+.ce { font-size:clamp(1.1rem,2.2vh,1.7rem); display:block; margin-bottom:.4vh; }
+.cm {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.75rem,1.4vh,1rem);
+  font-weight:700; color:var(--deep);
+  display:block; margin-bottom:.2vh; line-height:1.3;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+}
+.cd {
+  font-size:clamp(.6rem,1vh,.78rem);
+  color:var(--dim); display:block; line-height:1.4;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+
+/* 戻るエリア */
+.back-area {
+  flex-shrink:0;
+  display:flex; align-items:center; gap:1vw;
+  padding:.8vh 1vw;
+  background:var(--pink); border-radius:12px;
+  flex-wrap:wrap;
+}
+.back-label { font-size:clamp(.7rem,1vw,.88rem); color:var(--dim); white-space:nowrap; }
+.back-btns { display:flex; gap:.6vw; }
+.btn-bn, .btn-by {
+  border-radius:40px; padding:.45vh 1.2vw;
+  font-size:clamp(.72rem,1.1vw,.9rem);
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-weight:700; cursor:pointer; transition:all .2s; border:none; white-space:nowrap;
+}
+.btn-bn { background:#fff; color:var(--dim); border:1.5px solid var(--faint); }
+.btn-bn:hover { border-color:var(--dim); color:var(--deep); }
+.btn-by { background:rgba(196,122,90,.12); color:var(--accent); border:1.5px solid rgba(196,122,90,.35); }
+.btn-by:hover { background:rgba(196,122,90,.25); }
+
+.back-q-list {
+  display:none; width:100%; flex-wrap:wrap; gap:.5vw; margin-top:.5vh;
+}
+.back-q-list.open { display:flex; }
+.btn-bq {
+  background:#fff; border:1.5px solid var(--border); border-radius:10px;
+  padding:.4vh 1vw; color:var(--mid);
+  font-size:clamp(.66rem,.95vw,.82rem);
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  cursor:pointer; text-align:left; transition:all .2s; line-height:1.5; white-space:nowrap;
+}
+.btn-bq:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ══════════════════════════════
+   RESULT
+══════════════════════════════ */
+#s-result {
+  flex-direction:row;
+  background: var(--bg);
+}
+
+.result-left {
+  width:30%; height:100%;
+  display:flex; flex-direction:column;
+  justify-content:center;
+  padding:4vh 3vw;
+  border-right:1px solid var(--border);
+  background: var(--bg2);
+  gap:2vh;
+}
+.result-eyebrow {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.72rem,1vw,.9rem); letter-spacing:.3em; color:var(--accent);
+}
+.result-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1.2rem,2.8vw,2rem);
+  font-weight:300; line-height:1.5; color:var(--deep);
+}
+.result-actions { display:flex; flex-direction:column; gap:1vh; }
+.btn-print, .btn-copy {
+  border-radius:14px; padding:.8vh 1.5vw;
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.8rem,1.4vw,1.1rem);
+  font-weight:700; cursor:pointer; transition:all .3s; border:none;
+  text-align:center;
+}
+.btn-print {
+  background:linear-gradient(135deg,var(--accent),#e0a080);
+  color:#fff; box-shadow:0 4px 16px rgba(196,122,90,.25);
+}
+.btn-print:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(196,122,90,.4); }
+.btn-copy {
+  background:#fff; color:var(--mid);
+  border:1.5px solid var(--border);
+}
+.btn-copy:hover { border-color:var(--accent); }
+.btn-restart {
+  background:none; border:none; color:var(--faint);
+  font-size:clamp(.68rem,.95vw,.82rem); cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px; transition:color .2s;
+}
+.btn-restart:hover { color:var(--dim); }
+.result-note { font-size:clamp(.63rem,.9vw,.8rem); color:var(--faint); line-height:1.8; }
+
+/* ── カード本体（右側スクロール可） ── */
+.result-right {
+  flex:1; height:100%; overflow-y:auto;
+  padding:2vh 2.5vw;
+}
+
+/* ── まとめシート本体 ── */
+.result-card {
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:2.2vh 2.2vw;
+  box-shadow: 0 4px 24px rgba(196,122,90,.1);
+}
+
+/* ヘッダー：タイトル＋回答日 */
+.rc-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:2vh; padding-bottom:1.5vh;
+  border-bottom:2px solid var(--border);
+}
+.rc-head-left { display:flex; flex-direction:column; gap:.3vh; }
+.rc-app-name {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(.72rem,1vw,.88rem);
+  color:var(--accent); letter-spacing:.25em;
+}
+.rc-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1rem,1.8vw,1.4rem);
+  font-weight:600; color:var(--deep);
+}
+.rc-head-right { text-align:right; }
+.rc-date-label {
+  font-size:clamp(.62rem,.85vw,.78rem);
+  color:var(--faint); margin-bottom:.2vh;
+}
+.rc-date {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(1.2rem,2.8vw,2rem);
+  font-weight:700; color:var(--deep);
+}
+
+/* カテゴリグループ */
+.rc-cats { display:flex; flex-direction:column; gap:1.5vh; }
+.rc-cat {
+  background:var(--bg);
+  border-radius:14px;
+  overflow:hidden;
+}
+.rc-cat-head {
+  display:flex; align-items:center; gap:.6vw;
+  padding:.7vh 1.2vw;
+  background:linear-gradient(90deg, rgba(196,122,90,.15), rgba(196,122,90,.04));
+  border-bottom:1px solid var(--border);
+}
+.rc-cat-icon { font-size:clamp(.9rem,1.5vw,1.1rem); }
+.rc-cat-name {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.72rem,1.1vw,.9rem);
+  font-weight:700; color:var(--accent);
+  letter-spacing:.06em;
+}
+.rc-cat-rows {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:0;
+}
+.rc-row {
+  display:flex; flex-direction:column;
+  padding:.8vh 1.2vw;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.rc-row:nth-child(even) { border-right:none; }
+.rc-row:last-child, .rc-row:nth-last-child(2):nth-child(odd) { border-bottom:none; }
+.rc-label {
+  font-size:clamp(.6rem,.85vw,.78rem);
+  color:var(--accent2); font-weight:700;
+  letter-spacing:.06em; margin-bottom:.3vh;
+}
+.rc-val {
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.85rem,1.5vw,1.15rem);
+  font-weight:700; color:var(--deep); line-height:1.4;
+}
+.rc-val.skip {
+  color:var(--faint); font-style:italic;
+  font-size:clamp(.72rem,1.1vw,.88rem); font-weight:400;
+}
+.rc-foot {
+  margin-top:1.5vh; padding-top:1.2vh;
+  border-top:1px solid var(--border);
+  font-size:clamp(.6rem,.85vw,.78rem);
+  color:var(--faint); text-align:center; line-height:1.9;
+}
+
+/* ══════════════════════════════
+   印刷
+══════════════════════════════ */
+@media print {
+  @page { size:A4 portrait; margin:12mm 15mm; }
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #launch-msg, .result-left, .q-topbar { display:none !important; }
+  html, body {
+    width:210mm !important; height:auto !important;
+    overflow:visible !important; background:#fff !important;
+  }
+  #app { width:210mm !important; height:auto !important; display:block !important; overflow:visible !important; }
+  .screen { display:none !important; height:auto !important; }
+  #s-result {
+    display:block !important; width:100% !important; height:auto !important;
+    flex-direction:column !important;
+  }
+  .result-right {
+    width:100% !important; height:auto !important;
+    overflow:visible !important; padding:0 !important;
+  }
+  .result-card {
+    border:1px solid #ddd !important; box-shadow:none !important;
+    padding:8mm !important; border-radius:4mm !important;
+  }
+  .rc-date { font-size:20pt !important; color:#2a1f1a !important; }
+  .rc-rows { grid-template-columns:1fr 1fr !important; gap:4mm 6mm !important; }
+  .rc-row { background:#fdf6f0 !important; border-radius:3mm !important; padding:3mm 4mm !important; }
+  .rc-row.answered { border-left:2mm solid #c47a5a !important; }
+  .rc-label { color:#9b7c6e !important; font-size:7pt !important; }
+  .rc-val { color:#2a1f1a !important; font-size:11pt !important; }
+  .rc-val.skip { color:#aaa !important; font-size:9pt !important; }
+}
+
+/* ── スクショ全画面モード ── */
+#screenshot-overlay {
+  display:none;
+  position:fixed; inset:0; z-index:9000;
+  background:rgba(42,31,26,.6);
+  flex-direction:column;
+  align-items:center; justify-content:flex-start;
+  padding:20px;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+#screenshot-overlay.open { display:flex; }
+
+/* ss-card：固定幅900pxで確実にキャプチャ */
+.ss-card {
+  width:900px;
+  min-width:900px;
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 8px 40px rgba(42,31,26,.3);
+}
+/* スクショシートヘッダー */
+.ss-head {
+  background:linear-gradient(135deg,var(--bg2),var(--pink));
+  padding:20px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:2px solid var(--border);
+}
+.ss-head-left { display:flex; flex-direction:column; gap:3px; }
+.ss-app-name {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:13px; color:var(--accent);
+  letter-spacing:.3em; display:block;
+}
+.ss-sheet-title {
+  font-family:'Noto Serif JP',serif;
+  font-size:22px;
+  font-weight:600; color:var(--deep);
+  display:block;
+}
+.ss-subtitle-small {
+  font-family:'Noto Serif JP',serif;
+  font-size:12px;
+  color:var(--accent2); display:block;
+  font-weight:300; letter-spacing:.06em;
+}
+.ss-head-right { text-align:right; }
+.ss-date-label {
+  font-size:11px;
+  color:var(--faint); display:block; margin-bottom:4px;
+}
+.ss-date {
+  font-family:'Noto Serif JP',serif;
+  font-size:32px;
+  font-weight:700; color:var(--deep); display:block;
+}
+/* カテゴリ：3列×2行グリッド */
+.ss-cats {
+  padding:16px 20px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:14px;
+}
+.ss-cat { background:var(--bg); border-radius:10px; overflow:hidden; }
+.ss-cat-head {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 14px;
+  background:linear-gradient(90deg, rgba(196,122,90,.18), rgba(196,122,90,.04));
+  border-bottom:1px solid var(--border);
+}
+.ss-cat-icon { font-size:16px; }
+.ss-cat-name {
+  font-family:'Noto Serif JP',serif;
+  font-size:13px;
+  font-weight:700; color:var(--accent);
+}
+.ss-cat-rows { display:grid; grid-template-columns:1fr 1fr; }
+.ss-row {
+  padding:10px 12px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+}
+.ss-row:nth-child(even){ border-right:none; }
+.ss-row:last-child,.ss-row:nth-last-child(2):nth-child(odd){ border-bottom:none; }
+.ss-label {
+  font-size:10px;
+  color:var(--accent2); font-weight:700;
+  margin-bottom:4px; display:block;
+}
+.ss-val {
+  font-family:'Noto Serif JP',serif;
+  font-size:13px;
+  font-weight:700; color:var(--deep); line-height:1.4;
+  display:block; word-break:break-all;
+}
+.ss-val.skip { color:var(--faint); font-weight:400; font-style:italic; }
+.ss-footer {
+  padding:12px 20px;
+  border-top:1px solid var(--border);
+  font-size:11px;
+  color:var(--faint); text-align:center; line-height:1.8;
+  background:var(--bg2);
+}
+.ss-close-hint {
+  margin-top:4vw;
+  background:var(--accent); color:#fff;
+  border:none; border-radius:50px;
+  padding:3vw 8vw;
+  font-size:clamp(1rem,3.5vw,1.4rem);
+  font-family:'Noto Serif JP',serif; font-weight:700;
+  cursor:pointer; width:100%; max-width:400px;
+  flex-shrink:0;
+}
+
+
+
+/* スキップボタン */
+.btn-skip {
+  flex-shrink: 0;
+  align-self: flex-end;
+  background: var(--bg2);
+  border: 2px solid var(--accent2);
+  border-radius: 30px;
+  padding: .6vh 1.8vw;
+  font-size: clamp(.75rem, 1.2vw, .92rem);
+  color: var(--accent2);
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 700;
+}
+.btn-skip:hover {
+  background: var(--pink);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-skip.answered {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(196,122,90,.3);
+}
+
+/* ── 保存方法ボタン ── */
+.btn-screenshot {
+  background:#fff; color:var(--accent);
+  border:2px solid var(--accent);
+  border-radius:14px; padding:.8vh 1.5vw;
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(.8rem,1.4vw,1.1rem);
+  font-weight:700; cursor:pointer; transition:all .3s;
+  text-align:center;
+}
+.btn-screenshot:hover { background:var(--bg2); }
+.save-label {
+  font-size:clamp(.65rem,.9vw,.82rem);
+  color:var(--faint); margin-top:.3vh;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+
+<!-- 起動時オーバーレイ（3秒で消える） -->
+<div id="launch-msg">
+  <div class="launch-icon">📱</div>
+  <p>このアプリは<strong>横向き</strong>で<br>ご利用ください。</p>
+  <button class="skip-btn" onclick="dismissLaunch()">すぐに始める →</button>
+</div>
+
+<div id="app">
+
+  <!-- ① イントロ -->
+  <div class="screen active" id="s-intro">
+    <div class="intro-left">
+      <div class="eyebrow">A · C · P &nbsp; Advance Care Planning</div>
+      <h1 class="intro-title">思いの綴<span class="title-yomi">－おもいのと－</span></h1>
+      <p class="intro-subline">もしものとき、わたしのこと。</p>
+      <p class="intro-desc">
+        もし体の具合が悪くなったとき、<br>
+        あなたはどんなふうに過ごしたいですか？<br><br>
+        答えはひとつじゃなくていい。<br>
+        ゆっくり、自分のペースで考えてみましょう。
+      </p>
+      <div class="intro-tags">
+        <span class="tag">📖 全12問</span>
+        <span class="tag">⏱ 約10分</span>
+        <span class="tag">🖨 結果カード印刷OK</span>
+        <span class="tag">↩ いつでも戻れる</span>
+      </div>
+      <p class="intro-note">
+        このツールは医療的な指示ではありません。<br>
+        答えたくない質問はスキップできます。<br>
+        結果は家族や医療者との対話のきっかけにしてください。
+      </p>
+    </div>
+    <div class="intro-right">
+      <button class="btn-start" onclick="startQuiz()">は じ め る</button>
+    </div>
+  </div>
+
+  <!-- ② 質問 -->
+  <div class="screen" id="s-q">
+    <!-- トップバー -->
+    <div class="q-topbar">
+      <span class="prog-chapter" id="prog-ch">Chapter 1</span>
+      <div class="prog-bar-wrap"><div class="prog-fill" id="prog-f" style="width:0%"></div></div>
+      <div class="prog-dots" id="prog-dots"></div>
+      <span class="prog-count" id="prog-ct">1 / 12</span>
+    </div>
+
+    <!-- 本体 -->
+    <div class="q-body">
+      <div class="q-left">
+        <div class="q-chapter-label" id="q-cl"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-sub" id="q-sub"></div>
+      </div>
+      <div class="q-right">
+        <div class="choices" id="choices"></div>
+        <button class="btn-skip" id="btn-skip" onclick="skipQ()">この質問をスキップ →</button>
+        <div class="back-area" id="back-area">
+          <span class="back-label">前の質問に戻りますか？</span>
+          <div class="back-btns">
+            <button class="btn-bn" onclick="backNo()">そのまま進む</button>
+            <button class="btn-by" onclick="backYes()">↩ 戻りたい</button>
+          </div>
+          <div class="back-q-list" id="back-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 結果 -->
+  <div class="screen" id="s-result">
+    <div class="result-left">
+      <div class="result-eyebrow">Your ACP Card</div>
+      <h2 class="result-title">あなたの想いを<br>まとめました</h2>
+      <div class="result-actions">
+        <button class="btn-print" id="btn-img" onclick="saveImage()">🖼️ 画像として保存・シェア</button>
+        <div class="save-label">写真アプリ・LINEで共有OK</div>
+        <button class="btn-copy" onclick="copyText()">📋 テキストコピー</button>
+      </div>
+      <button class="btn-restart" onclick="restartQuiz()">もう一度はじめる</button>
+      <p class="result-note">
+        このカードは意思決定の強制ではありません。<br>
+        大切な決断は必ず医療者や家族と相談してください。
+      </p>
+    </div>
+    <div class="result-right">
+      <div class="result-card" id="rc-card">
+        <div class="rc-head">
+          <div class="rc-head-left">
+            <div class="rc-app-name">Advance Care Planning</div>
+            <div class="rc-title">思いの綴－おもいのと－</div>
+          </div>
+          <div class="rc-head-right">
+            <div class="rc-date-label">回答日</div>
+            <div class="rc-date" id="rc-date"></div>
+          </div>
+        </div>
+        <div class="rc-cats" id="rc-cats"></div>
+        <div class="rc-foot">
+          このカードはあなたの今の気持ちです。いつでも変えられます。<br>
+          家族や医療者と一緒に見ながら話し合うきっかけにしてください。
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- スクショ全画面オーバーレイ -->
+<div id="screenshot-overlay">
+  <div class="ss-card" id="ss-card-el">
+    <div class="ss-head">
+      <div class="ss-head-left">
+        <span class="ss-app-name">Advance Care Planning</span>
+        <span class="ss-sheet-title">思いの綴－おもいのと－</span>
+        <span class="ss-subtitle-small">もしものとき、わたしのこと。</span>
+      </div>
+      <div class="ss-head-right">
+        <span class="ss-date-label">回答日</span>
+        <span class="ss-date" id="ss-date"></span>
+      </div>
+    </div>
+    <div class="ss-cats" id="ss-cats"></div>
+    <div class="ss-footer">
+      このカードはあなたの今の気持ちです。いつでも変えられます。<br>
+      家族や医療者と一緒に見ながら話し合うきっかけにしてください。
+    </div>
+  </div>
+  <button class="ss-close-hint" onclick="closeScreenshot()">
+    ↑ スクショを撮ったら閉じる
+  </button>
+</div>
+</div>
+
+<script>
+/* ══ 質問データ ══ */
+const QS=[
+  {ch:"Chapter 1 · 大切にしていること",text:"毎日の生活で\nあなたが一番大切に\nしていることは？",sub:"直感で選んでください。正解はありません。",key:"value",
+   c:[{e:"🏡",m:"家族・大切な人と過ごす時間",d:"そばにいること、話すこと"},
+      {e:"🌿",m:"自分らしく・自由に生きること",d:"自分のペースで決めたい"},
+      {e:"😌",m:"苦しまずに穏やかでいること",d:"痛みや不安のないおだやかな日々"},
+      {e:"🤝",m:"人の役に立つこと",d:"誰かのため、つながっていたい"},
+      {e:"🎨",m:"好きなこと・趣味を続けること",d:"楽しみや生きがいを持ち続けたい"},
+      {e:"🙏",m:"信仰・精神的なつながり",d:"宗教や信念に従って生きたい"}]},
+  {ch:"Chapter 1 · 大切にしていること",text:"体の具合が悪くなったとき、\nあなたが一番\n心配なことは？",sub:"今の正直な気持ちを教えてください。",key:"fear",
+   c:[{e:"😔",m:"家族に迷惑をかけること",d:"介護や経済的な負担をかけたくない"},
+      {e:"😣",m:"痛みや苦しさが続くこと",d:"体の辛さに耐えなければならない状況"},
+      {e:"🔇",m:"自分で決められなくなること",d:"意識や判断力を失い選べなくなること"},
+      {e:"🏥",m:"病院から出られなくなること",d:"慣れない場所で過ごすこと"},
+      {e:"👤",m:"ひとりになってしまうこと",d:"孤独な状況で過ごすこと"},
+      {e:"💸",m:"お金・生活のこと",d:"治療費が家族の負担になること"}]},
+  {ch:"Chapter 2 · 過ごしたい場所",text:"もし病気が重くなったとき、\nあなたはどこで\n過ごしたいですか？",sub:"「今の気持ち」で。状況によって変わってもOKです。",key:"place",
+   c:[{e:"🏠",m:"できるだけ自宅にいたい",d:"住み慣れた場所で家族と"},
+      {e:"🏥",m:"病院でしっかり診てもらいたい",d:"医療がすぐそばにある環境が安心"},
+      {e:"🌸",m:"ホスピス・緩和ケア病棟で",d:"苦痛を和らげることを中心にした場所"},
+      {e:"🏘",m:"施設・グループホームで",d:"専門的なケアを受けながら"},
+      {e:"💭",m:"状態によって決めたい",d:"一概には言えない、柔軟に考えたい"},
+      {e:"🤷",m:"まだよくわからない",d:"もっと知ってから考えたい"}]},
+  {ch:"Chapter 2 · 過ごしたい場所",text:"最期のとき、\nあなたのそばに\n誰にいてほしいですか？",sub:"今すぐ答えが出なくてもOKです。",key:"beside",
+   c:[{e:"👨‍👩‍👧",m:"家族にそばにいてほしい",d:"配偶者、子ども、親など"},
+      {e:"👫",m:"親しい友人・信頼できる人に",d:"家族でなくても気心の知れた人"},
+      {e:"🤲",m:"医療者・専門家に任せたい",d:"プロのケアのもとで静かに"},
+      {e:"🌙",m:"ひとりで、静かに",d:"誰かに気を使わず自分だけの時間"},
+      {e:"🐾",m:"ペットにもそばにいてほしい",d:"大切な家族である動物とともに"},
+      {e:"📿",m:"信仰の仲間と",d:"精神的なつながりを感じられる人と"}]},
+  {ch:"Chapter 3 · 延命治療について",text:"意思を伝えられなくなったとき、\nあなたは延命治療について\nどう考えますか？",sub:"心肺蘇生・人工呼吸器・胃ろうなど命を長らえる医療処置です。",key:"lifesustain",
+   c:[{e:"💚",m:"できる限りの治療をしてほしい",d:"回復の可能性があるなら全力で"},
+      {e:"🌸",m:"苦しくない範囲で自然に任せたい",d:"無理な延命より穏やかな最期を"},
+      {e:"📋",m:"状況によって家族に判断してほしい",d:"そのときに委ねたい"},
+      {e:"⏳",m:"一定期間だけ試してほしい",d:"改善がなければ見直してほしい"},
+      {e:"💬",m:"主治医の意見を尊重したい",d:"専門家の判断に従いたい"},
+      {e:"💭",m:"まだ考えたことがなかった",d:"もう少し情報を知ってから"}]},
+  {ch:"Chapter 3 · 延命治療について",text:"「回復の見込みがない」と\n医師に言われたら、\nあなたはどうしますか？",sub:"難しい問いですが、今の気持ちをそのまま選んでください。",key:"terminal",
+   c:[{e:"🌿",m:"穏やかに過ごせる方法を選ぶ",d:"苦しまず自分らしく残りの時間を"},
+      {e:"⚕️",m:"最後まで積極的な治療を",d:"わずかな可能性にかけたい"},
+      {e:"👨‍👩‍👧",m:"家族と一緒に決めたい",d:"大切な人と話し合いたい"},
+      {e:"✍️",m:"事前に文書で決めておきたい",d:"リビングウィルを作りたい"},
+      {e:"🕊",m:"自然の流れに委ねたい",d:"自然なかたちで"},
+      {e:"🤷",m:"今はまだ考えられない",d:"気持ちの整理がついていない"}]},
+  {ch:"Chapter 4 · 家族・大切な人へ",text:"あなたの気持ちや希望を\n誰に知っておいて\nほしいですか？",sub:"もしものとき、代わりに意思を伝えてくれる人です。",key:"proxy",
+   c:[{e:"💑",m:"配偶者・パートナー",d:"人生をともに歩んできた人"},
+      {e:"👦",m:"子ども・きょうだい",d:"家族の中で頼りにしている人"},
+      {e:"👴",m:"親・親戚",d:"長く人生を知ってくれている人"},
+      {e:"🌟",m:"信頼できる友人・知人",d:"本当に分かり合える人"},
+      {e:"⚕️",m:"主治医・かかりつけ医",d:"健康状態をよく知っている医師"},
+      {e:"📋",m:"まだ決まっていない",d:"これから考えたい"}]},
+  {ch:"Chapter 4 · 家族・大切な人へ",text:"大切な人に、\nあなたの気持ちを\n伝えていますか？",sub:"話し合うことが、ACPの第一歩です。",key:"communication",
+   c:[{e:"✅",m:"ある程度話したことがある",d:"伝えている部分がある"},
+      {e:"🔜",m:"話したいが、きっかけがなかった",d:"機会があれば話したいと思っている"},
+      {e:"😶",m:"難しくて、話せていない",d:"心配させたくない"},
+      {e:"📝",m:"エンディングノートには書いた",d:"口では言えないが書いてある"},
+      {e:"🙅",m:"話すつもりはない",d:"自分の中だけで決めておきたい"},
+      {e:"🆕",m:"今日が初めて考えるきっかけ",d:"このツールで初めてじっくり考えた"}]},
+  {ch:"Chapter 5 · 痛みや苦しさについて",text:"痛みや苦しさに対して、\nあなたはどのように\n対処したいですか？",sub:"緩和ケアとは：痛みや苦しさを和らげる医療・ケアのことです。",key:"pain",
+   c:[{e:"😌",m:"痛みはできるだけ取り除いてほしい",d:"緩和ケアを積極的に"},
+      {e:"🧘",m:"意識がはっきりしていたい",d:"頭が働く状態でいたい"},
+      {e:"🤝",m:"医師や看護師に相談して決めたい",d:"状況を見ながら柔軟に"},
+      {e:"🙏",m:"信仰・祈りで心の平穏を",d:"精神的なケアも大切にしたい"},
+      {e:"🌿",m:"代替療法も取り入れたい",d:"西洋医学以外も考えたい"},
+      {e:"💭",m:"今はまだわからない",d:"もう少し考えてみたい"}]},
+  {ch:"Chapter 5 · 痛みや苦しさについて",text:"意識がなくなっても、\nあなたらしさを保つために\n大切にしてほしいことは？",sub:"五感で感じられる、あなたらしさのかけらを。",key:"identity",
+   c:[{e:"🎵",m:"好きな音楽を流してほしい",d:"耳から伝わる親しみのある音楽"},
+      {e:"🌸",m:"好きな香りや花を置いてほしい",d:"心地よい環境"},
+      {e:"📖",m:"好きな言葉・本・写真をそばに",d:"人生を感じさせてくれるもの"},
+      {e:"🤲",m:"大切な人にそばにいてほしい",d:"声や温もりを感じていたい"},
+      {e:"🌅",m:"窓から外の景色が見えるところで",d:"自然の光や風を感じていたい"},
+      {e:"🍚",m:"好きな食べ物のそばに",d:"においや記憶でつながっていたい"}]},
+  {ch:"Chapter 6 · 最後に",text:"このツールを使ってみて、\nあなたの気持ちは\nどうですか？",sub:"正直に教えてください。あなたの感想は大切です。",key:"feeling",
+   c:[{e:"💡",m:"考えるきっかけになった",d:"漠然と考えていたことが整理された"},
+      {e:"😌",m:"少し不安が和らいだ",d:"考えることへの怖さが薄れてきた"},
+      {e:"😔",m:"まだ気持ちが整理できない",d:"もう少し時間が必要かもしれない"},
+      {e:"💬",m:"誰かと話したくなった",d:"家族や医療者と話し合うきっかけに"},
+      {e:"📝",m:"もっと書き留めておきたい",d:"エンディングノートにまとめたい"},
+      {e:"🔁",m:"また時間をおいて考えたい",d:"繰り返し考えていきたい"}]},
+  {ch:"Chapter 6 · 最後に",text:"あなたにとって\n「良い最期」とは\nどんなイメージですか？",sub:"最後の質問です。直感で選んでください。",key:"goodend",
+   c:[{e:"🏡",m:"住み慣れた場所で、家族に囲まれて",d:"日常の延長線上に、静かに"},
+      {e:"😌",m:"苦しまず、穏やかに",d:"痛みのない、安らかな時間"},
+      {e:"✨",m:"自分らしく生き切ったと感じられる",d:"後悔のない、納得のある終わり"},
+      {e:"🌅",m:"美しい景色の中で",d:"自然や季節を感じながら"},
+      {e:"🙏",m:"感謝の気持ちを伝えられる",d:"「ありがとう」を言えた"},
+      {e:"💭",m:"まだ考えたくない・わからない",d:"今はその問いに向き合えない"}]},
+];
+
+const LABELS={value:"大切にしていること",fear:"心配していること",place:"過ごしたい場所",beside:"そばにいてほしい人",lifesustain:"延命治療について",terminal:"回復見込みがない場合",proxy:"気持ちを知っておいてほしい人",communication:"家族・大切な人との対話",pain:"痛み・苦しさへの対処",identity:"自分らしさを保つために",feeling:"ツールを使っての感想",goodend:"良い最期のイメージ"};
+const ICONS={value:"💛",fear:"💭",place:"🏡",beside:"🤝",lifesustain:"⚕️",terminal:"🌿",proxy:"👤",communication:"💬",pain:"😌",identity:"✨",feeling:"💡",goodend:"🌸"};
+
+let cur=0, answers={}, backOpen=false;
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation='none'; el.offsetHeight; el.style.animation='';
+}
+
+function startQuiz(){ cur=0; answers={}; backOpen=false; buildDots(); renderQ(); show('s-q'); }
+
+function skipQ(){
+  if(answers[QS[cur].key] !== undefined) delete answers[QS[cur].key];
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('btn-skip').classList.remove('answered');
+  if(cur < QS.length-1){ cur++; renderQ(); }
+  else { buildResult(); show('s-result'); }
+}
+
+function buildDots(){
+  document.getElementById('prog-dots').innerHTML=
+    QS.map((_,i)=>`<div class="pdot" id="dot-${i}"></div>`).join('');
+}
+
+function renderQ(){
+  const q=QS[cur];
+  document.getElementById('prog-f').style.width=(cur/QS.length*100)+'%';
+  document.getElementById('prog-ct').textContent=`${cur+1} / ${QS.length}`;
+  document.getElementById('prog-ch').textContent=q.ch.split('·')[0].trim();
+  QS.forEach((_,i)=>{
+    const d=document.getElementById(`dot-${i}`);
+    d.className='pdot';
+    if(answers[QS[i].key]!==undefined) d.classList.add('done');
+    if(i===cur) d.classList.add('cur');
+  });
+  document.getElementById('q-cl').textContent=q.ch;
+  document.getElementById('q-text').textContent=q.text;
+  const skipBtn = document.getElementById('btn-skip');
+  if(skipBtn){ skipBtn.textContent='この質問をスキップ →'; skipBtn.classList.remove('answered'); }
+  document.getElementById('q-sub').textContent=q.sub;
+
+  const si=answers[q.key];
+  document.getElementById('choices').innerHTML=q.c.map((c,i)=>`
+    <button class="choice-btn ${si===i?'selected':''}" onclick="pick(${i})">
+      <span class="ce">${c.e}</span>
+      <span class="cm">${c.m}</span>
+      <span class="cd">${c.d}</span>
+    </button>`).join('');
+
+  backOpen=false;
+  document.getElementById('back-list').classList.remove('open');
+  document.getElementById('back-area').style.display=cur>0?'flex':'none';
+}
+
+function pick(idx){
+  const q=QS[cur];
+  answers[q.key]=idx;
+  document.querySelectorAll('.choice-btn').forEach((b,i)=>b.classList.toggle('selected',i===idx));
+  setTimeout(()=>{
+    if(cur<QS.length-1){ cur++; renderQ(); }
+    else showResult();
+  },350);
+}
+
+function backNo(){ backOpen=false; document.getElementById('back-list').classList.remove('open'); }
+function backYes(){
+  if(backOpen){ backNo(); return; }
+  backOpen=true;
+  const answered=QS.slice(0,cur).map((q,i)=>({q,i})).reverse();
+  document.getElementById('back-list').innerHTML=answered.map(({q,i})=>{
+    const a=answers[q.key];
+    const val=a!==undefined?`「${q.c[a].m}」`:'（未回答）';
+    return `<button class="btn-bq" onclick="jumpTo(${i})">Q${i+1}. ${q.text.split('\n')[0]} → ${val}</button>`;
+  }).join('');
+  document.getElementById('back-list').classList.add('open');
+}
+function jumpTo(idx){ cur=idx; backOpen=false; renderQ(); }
+
+/* カテゴリ定義 */
+const CATS = [
+  { icon:'💛', name:'大切にしていること',    keys:['value','fear'] },
+  { icon:'🏡', name:'過ごしたい場所・人',    keys:['place','beside'] },
+  { icon:'⚕️', name:'延命治療について',      keys:['lifesustain','terminal'] },
+  { icon:'💬', name:'家族・大切な人へ',      keys:['proxy','communication'] },
+  { icon:'😌', name:'痛みや苦しさについて',  keys:['pain','identity'] },
+  { icon:'🌸', name:'最後に',               keys:['feeling','goodend'] },
+];
+
+function buildCatHTML(prefix){
+  /* prefix = 'rc' → .rc-cat/.rc-row  |  prefix = 'ss' → .ss-cat/.ss-row */
+  return CATS.map(cat => {
+    const rows = cat.keys.map(key => {
+      const q = QS.find(q=>q.key===key);
+      const a = answers[key];
+      const answered = a !== undefined;
+      return `<div class="${prefix}-row">
+        <span class="${prefix}-label">${LABELS[key]}</span>
+        <span class="${prefix}-val${answered?'':' skip'}">${answered ? q.c[a].m : '（スキップ）'}</span>
+      </div>`;
+    }).join('');
+    return `<div class="${prefix}-cat">
+      <div class="${prefix}-cat-head">
+        <span class="${prefix}-cat-icon">${cat.icon}</span>
+        <span class="${prefix}-cat-name">${cat.name}</span>
+      </div>
+      <div class="${prefix}-cat-rows">${rows}</div>
+    </div>`;
+  }).join('');
+}
+
+function showResult(){
+  const now=new Date();
+  const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  document.getElementById('rc-date').textContent = dateStr;
+  document.getElementById('rc-cats').innerHTML = buildCatHTML('rc');
+  show('s-result');
+}
+
+/* 画像として保存・シェア（html2canvas） */
+function saveImage(){
+  const btn = document.getElementById('btn-img');
+  btn.textContent = '⏳ 画像を生成中...';
+  btn.disabled = true;
+
+  function loadH2C(cb){
+    if(typeof html2canvas !== 'undefined'){ cb(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = cb;
+    s.onerror = () => {
+      btn.textContent = '🖼️ 画像として保存・シェア';
+      btn.disabled = false;
+      alert('ライブラリ読込失敗。\nネット接続を確認してください。');
+    };
+    document.head.appendChild(s);
+  }
+
+  loadH2C(() => {
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+    const fname = `omoi_${dateStr}.png`;
+    const dateDisp = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+
+    // ① オーバーレイにデータを流し込む
+    document.getElementById('ss-date').textContent = dateDisp;
+    document.getElementById('ss-cats').innerHTML = buildCatHTML('ss');
+
+    // ② オーバーレイを表示（見える状態でキャプチャするのが確実）
+    const ov = document.getElementById('screenshot-overlay');
+    const card = document.getElementById('ss-card-el');
+    ov.classList.add('open');
+    ov.scrollTop = 0;
+
+    // ③ 描画完了を待ってからカード全体をキャプチャ
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        const rect = card.getBoundingClientRect();
+        const cardH = card.scrollHeight;
+        html2canvas(card, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          scrollX: 0,
+          scrollY: 0,
+          x: 0,
+          y: 0,
+          width: 900,
+          height: cardH,
+          windowWidth: 940,
+          windowHeight: cardH + 40,
+          onclone: (doc) => {
+            const clonedCard = doc.getElementById('ss-card-el');
+            if(clonedCard){
+              clonedCard.style.position = 'static';
+              clonedCard.style.overflow = 'visible';
+              clonedCard.style.width = '900px';
+              clonedCard.style.minWidth = '900px';
+            }
+          }
+        }).then(canvas => {
+          // キャプチャ完了後にオーバーレイを閉じる
+          ov.classList.remove('open');
+
+          const imgData = canvas.toDataURL('image/png');
+
+          // Web Share API（iOS Safari・シェアシート）
+          if(navigator.share){
+            canvas.toBlob(blob => {
+              if(!blob){
+                fallbackDownload(imgData, fname);
+                btn.textContent = '🖼️ 画像として保存・シェア';
+                btn.disabled = false;
+                return;
+              }
+              const file = new File([blob], fname, { type:'image/png' });
+              const shareData = {
+                title: '思いの綴 ― もしものとき、わたしのこと。',
+                text: `ACP まとめシート（${dateDisp}）`,
+                files: [file]
+              };
+              const canShare = navigator.canShare ? navigator.canShare(shareData) : true;
+              if(canShare){
+                navigator.share(shareData)
+                  .catch(e => { if(e.name !== 'AbortError') fallbackDownload(imgData, fname); })
+                  .finally(() => {
+                    btn.textContent = '🖼️ 画像として保存・シェア';
+                    btn.disabled = false;
+                  });
+              } else {
+                fallbackDownload(imgData, fname);
+                btn.textContent = '🖼️ 画像として保存・シェア';
+                btn.disabled = false;
+              }
+            }, 'image/png');
+          } else {
+            // Android/PC：直接ダウンロード
+            fallbackDownload(imgData, fname);
+            btn.textContent = '🖼️ 画像として保存・シェア';
+            btn.disabled = false;
+          }
+        }).catch(e => {
+          ov.classList.remove('open');
+          console.error(e);
+          btn.textContent = '🖼️ 画像として保存・シェア';
+          btn.disabled = false;
+          alert('画像の生成に失敗しました。\nもう一度お試しください。');
+        });
+      });
+    }, 300);
+  });
+}
+
+function fallbackDownload(dataUrl, fname){
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = fname;
+  a.click();
+}
+
+function copyText(){
+  const now=new Date();
+  let t=`【思いの綴 ― もしものとき、わたしのこと。】\n作成日：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日\n\n`;
+  QS.forEach(q=>{
+    const a=answers[q.key];
+    t+=`◆ ${LABELS[q.key]}\n　${a!==undefined?q.c[a].e+' '+q.c[a].m:'（スキップ）'}\n\n`;
+  });
+  t+=`---\nこのカードは意思決定の強制ではありません。\n家族や医療者と話し合うきっかけにしてください。\n作成：くすりのたま`;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t).then(()=>alert('コピーしました！\nメモやLINEに貼り付けられます。'));
+  } else {
+    const ta=document.createElement('textarea'); ta.value=t;
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    alert('コピーしました！');
+  }
+}
+
+function openScreenshot(){
+  const now = new Date();
+  document.getElementById('ss-date').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  document.getElementById('ss-cats').innerHTML = buildCatHTML('ss');
+  const ov = document.getElementById('screenshot-overlay');
+  ov.classList.add('open');
+  ov.scrollTop = 0;
+}
+
+function closeScreenshot(){
+  document.getElementById('screenshot-overlay').classList.remove('open');
+}
+
+/* 起動オーバーレイ：3秒で自動消去 */
+function dismissLaunch(){
+  const el = document.getElementById('launch-msg');
+  if(el){ el.classList.add('hidden'); setTimeout(()=>el.remove(), 700); }
+}
+
+(function(){
+  setTimeout(()=> dismissLaunch(), 3000);
+})();
+
+function restartQuiz(){
+  if(confirm('最初からやり直しますか？（入力内容はリセットされます）')) startQuiz();
+}
+</script>
+</body>
+</html>
